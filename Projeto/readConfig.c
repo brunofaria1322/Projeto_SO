@@ -9,7 +9,9 @@ Data readConfig(Data data){
   if (f == NULL){
       error("Couldn't open the file config.txt");
   }
-
+  
+  //TODO: Criar protetor para verificar o formato do config (1val, 2val, 2val, 2val, 1val 1val)
+  
   for (i=0;i<6;i++){
     switch (i){
 
