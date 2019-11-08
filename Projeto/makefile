@@ -1,3 +1,2 @@
 all:
-	gcc main.c header.h readConfig.c -o main
-	./main
+	gcc main.c header.h readConfig.c torre.c -o main

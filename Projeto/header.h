@@ -19,6 +19,6 @@ typedef struct{
 void printData(Data data);
 Data readConfig(Data data);
 void error(char *erro);
-
+void torre();
 
 //void fixInput(char *string);
