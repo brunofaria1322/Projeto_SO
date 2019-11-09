@@ -1,8 +1,21 @@
-#include "stdio.h"
-#include "stdlib.h"
-#include "string.h"
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <sys/shm.h>
+#include <sys/sem.h>
+#include <semaphore.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <time.h>
+#include <pthread.h>
 
 #define MAX 256
+#define DEBUG   //remove this line to remove debug messages
+#define PIPE_NAME   "input_pipe"
 
 typedef struct{
   int ut;   //Unity of Time (milisseconds)
@@ -18,7 +31,7 @@ typedef struct{
 
 void printData(Data data);
 Data readConfig(Data data);
-void error(char *erro);
 void torre();
+void writeLog(char *log);
 
 //void fixInput(char *string);
