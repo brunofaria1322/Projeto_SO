@@ -29,7 +29,7 @@ void pipew(char state, char*argv[]){
 			writeLog(wcom);
 		}
 	}
-	if (state == 'a'){
+	else if (state == 'a'){
 		if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"eta:")==0 && atoi(argv[6]) != 0 && strcmp(argv[7],"fuel") ==0 && atoi(argv[8]) != 0){
 			char * com = command(9, argv);
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
@@ -54,10 +54,9 @@ void pipew(char state, char*argv[]){
 		}
 	}
 	else{
-		perror("Wrong state value ate pipew. state shoud be 'd' for depart or 'a' for arrival.");
+		perror("Wrong state value at pipew. state shoud be 'd' for depart or 'a' for arrival.");
 		exit(1);
-		break;
-		}
+		
 	}
 
 }

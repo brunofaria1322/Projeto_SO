@@ -69,7 +69,7 @@ int main(int argc, char *argv[]){
 		if (strcmp(argv[1],"DEPARTURE")==0){
 			char * com = command(argc, argv);
 			if(argc == 7){
-				pipew(argv);
+				pipew('d',argv);
 			}
 			else{
 				printf("Invalid number of arguments (%d). Command takes 6 arguments - DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}",argc);
@@ -81,7 +81,7 @@ int main(int argc, char *argv[]){
 		else if (strcmp(argv[1],"ARRIVAL")==0){
 			char * com = command(argc, argv);
 			if(argc == 9){
-				pipew(argv);
+				pipew('a',argv);
 			}
 			else{
 			printf("Invalid number of arguments (%d). Command takes 8 arguments - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}",argc);
