@@ -29,9 +29,40 @@ typedef struct{
   int A;    //number max of Arrivals of the sistema
 }Data;
 
+typedef struct{
+  int flights_created;      //Total number of flights created
+  int flights_landed;       //Total number of flights that landed
+  int time2land;            //Average wait time (beyond ETA) to land
+  int flights_takingoff;    //Total number of flights taking off
+  int time2takeoff;         //Average wait time to take off
+  int hm;                   //Average number of holding maneuvers per landing flight
+  int hm_emergency;         //Average number of holding maneuvers per emergency flight
+  int flights_redirected;   //Number of flights redirected to another airport
+  int flights_rejected;     //Flights rejected by the Control Tower
+
+  //extras
+  char *id;                 //id of flight
+  int fuel;                 //fuel of flight
+  int eta;                  //estimated time of arrival
+  int etd;                  //estimated time to depart
+}SharedMemory;
+
+typedef struct{
+	char* code;
+	float init;
+	float takeoff;
+}Departure;
+
+typedef struct{
+	char* code;
+	float init;
+	float eta;
+	float fuel;
+}Arrival;
 void printData(Data data);
 Data readConfig(Data data);
 void torre();
 void writeLog(char *log);
-
+void pipew(char state,char* argv[]);  //state can be "d" for depart or "a" for arrival
+char* command(int argc, char *argv[]);
 //void fixInput(char *string);

@@ -1,0 +1,6 @@
+23:26:06 Program started running.
+23:26:06 Wrong command => DEPARTURE TP440 init: 0 takeoff: 100 
+23:26:06 Program finished running.
+00:16:23 Program started running.
+00:16:23 New command => DEPARTURE TP440 init: 1 takeoff: 100 
+00:16:23 Program finished running.

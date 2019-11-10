@@ -5,7 +5,6 @@ void writeLog(char *log){
   char buff[64];
 
   #ifdef DEBUG
-    printf("Openning log.txt, writing and printing log\n");
   #endif
 
   if ((f= fopen("log.txt" ,"a+")) == NULL){
@@ -18,7 +17,7 @@ void writeLog(char *log){
   strftime(buff, sizeof(buff), "%X", tmp);
 
   fprintf(f, "%s %s\n", buff, log);
-  printf("%s %s\n", buff, log);
+  printf("\n%s %s\n", buff, log);
 
   fclose(f);
 }
