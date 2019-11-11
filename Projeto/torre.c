@@ -1,4 +1,6 @@
 #include "header.h"
 void torre(){
-	printf("Look at me, I'm a child process!\n");
+	#ifdef DEBUG
+		printf("Look at me, I'm a child process!\n");
+	#endif
 }

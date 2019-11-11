@@ -14,13 +14,8 @@
 #include <pthread.h>
 
 #define MAX 256
-#define DEBUG   //remove this line to remove debug messages
+//#define DEBUG   //remove this line to remove debug messages
 #define PIPE_NAME   "input_pipe"
-
-typedef struct{
-  int argc;
-  char *argv[];
-}args;
 
 typedef struct{
   int ut;   //Unity of Time (milisseconds)
@@ -82,16 +77,16 @@ typedef struct{
 
 commands* removeFirstCommand(commands * head);
 commands* addCommand(commands * node, commands * head);
-void ftimer(void * infor);
+void ftimer(info * inf);
 //float getTime(int ut);
 void printData(Data data);
 Data readConfig(Data data);
 void torre();
 void writeLog(char *log);
-commands * verify(char state,char* argv[], commands * head);  //state can be "d" for depart or "a" for arrival
-char* command(int argc, char *argv[]);
-commands * verifica (int argc, char *argv[], commands * head);
+commands * verify(char state,char argv[][MAX], commands * head);  //state can be "d" for depart or "a" for arrival
+char* command(int argc, char argv[][MAX]);
+commands * verifica (int argc, char argv[][MAX], commands * head);
 
-void fDepart(Departure * departure);
-void fArrival(Arrival * arrival);
+void *fDepart(Departure * departure);
+void *fArrival(Arrival * arrival);
 //void fixInput(char *string);

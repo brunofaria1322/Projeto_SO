@@ -4,8 +4,7 @@ void writeLog(char *log){
   FILE *f;
   char buff[64];
 
-  #ifdef DEBUG
-  #endif
+  
 
   if ((f= fopen("log.txt" ,"a+")) == NULL){
       perror("Couldn't open the file log.txt");

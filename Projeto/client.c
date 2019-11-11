@@ -6,26 +6,22 @@
 #include <sys/types.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <string.h>
 
-
-typedef struct{
-  int argc;
-  char *argv[];
-}args;
 
 #define PIPE_NAME   "input_pipe"
 
+
 int main(int argc, char *argv[]) {
-  args * command = (args *) malloc (sizeof(args));
-  command->argc=argc;
+
   int i;
-  for (i=0;i<argc;i++){
-    command->argv[i]=argv[i];
-    printf ("Arg[%d] - %s\n",i,command->argv[i]);
-  }
+  #ifdef DEBUG
+    for (i=0;i<argc;i++){
+      printf ("Arg[%d] - %s\n",i,argv[i]);
+    }
 
 	// Creates the named pipe if it doesn't exist yet
-	#ifdef DEBUG
+	
 		printf("Creating named pipe\n");
 	#endif
 
@@ -40,15 +36,19 @@ int main(int argc, char *argv[]) {
   #endif
 
   int fd;
-  if ((fd = open(PIPE_NAME, O_RDWR)) < 0) { // O_RDONLY  só para leitura, WRONLY só para escrita
+  if ((fd = open(PIPE_NAME, O_RDWR)) < 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
     perror("Cannot open pipe for writing: ");
     exit(1);
   }
 
-  write(fd, &command, sizeof(args));
+  write(fd,&argc, sizeof(argc));
 
-  for (i=0;i<command->argc;i++){
-    printf ("Arg[%d] - %s\n",i,command->argv[i]);
+  for (i=0;i<argc;i++){
+    #ifdef DEBUG
+      printf ("Sending Arg[%d] - %s\n",i,argv[i]);
+    #endif
+    write(fd,argv[i],strlen(argv[i])+1);
+    usleep(100);      //should be semaphore
   }
   close(fd);
   return 0;

@@ -32,3 +32,217 @@
 05:41:43 Program started running.
 05:43:45 Program started running.
 05:46:34 Program started running.
+14:58:37 Program started running.
+15:14:52 Program started running.
+15:16:27 Program started running.
+15:21:14 Program started running.
+15:22:59 Program started running.
+15:24:11 Program started running.
+15:25:42 Program started running.
+15:26:26 Program started running.
+15:28:36 Program started running.
+15:30:30 Program started running.
+15:31:11 Program started running.
+15:31:41 Program started running.
+15:32:05 Program started running.
+15:32:09 Wrong command =>  
+15:32:22 Wrong command => p]Í(V 
+15:43:57 Program started running.
+15:55:39 Program started running.
+15:58:40 Program started running.
+16:03:28 Program started running.
+16:06:15 Program started running.
+16:07:19 Program started running.
+16:07:33 Program started running.
+16:20:42 Program started running.
+16:21:55 Program started running.
+16:23:41 Program started running.
+16:23:46 Wrong command => ab ab 
+16:23:47 Wrong command => ab ab 
+16:24:11 Program started running.
+16:24:13 Wrong command => ./client ./client 
+16:25:20 Program started running.
+16:25:30 Wrong command => cd cd 
+16:25:31 Wrong command => cd cd 
+16:26:33 Program started running.
+16:26:49 Program started running.
+16:28:11 Program started running.
+16:32:25 Program started running.
+16:34:15 Program started running.
+16:34:20 Wrong command => ab cd 
+16:34:21 Wrong command => cd cd 
+16:34:41 Wrong command => ab cd 
+16:34:42 Wrong command => cd cd 
+16:37:09 Program started running.
+16:37:19 Wrong command => ab cd 
+16:37:20 Wrong command => cd cd 
+16:43:58 Wrong command => DEPARTURE 10 
+16:43:59 Wrong command => 10 10 
+16:52:46 Program started running.
+16:52:52 Wrong command => DEPARTURE 10 
+16:52:53 Wrong command => 10 10 
+16:54:42 Program started running.
+16:54:44 Wrong command => DEPARTURE 10 
+16:54:45 Wrong command => 10 10 
+16:56:51 Program started running.
+16:56:54 Wrong command => DEPARTURE 10 
+17:00:51 Wrong command => DEPARTURE code 10 100 
+17:01:17 Wrong command => DEPARTURE code init: 10 takeof: 100 
+17:01:30 New command => DEPARTURE code init: 10 takeoff: 100 
+17:02:14 Program started running.
+17:02:23 New command => DEPARTURE code init: 10 takeoff: 100 
+17:02:48 Program started running.
+17:02:55 Wrong command => DEPARTURE code init: 10 takeof: 100 
+17:03:14 Program started running.
+17:03:21 New command => DEPARTURE code init: 30 takeoff: 100 
+17:04:58 Program started running.
+17:06:28 Program started running.
+17:06:37 New command => DEPARTURE code init: 50 takeoff: 100 
+17:10:55 Program started running.
+17:11:03 New command => DEPARTURE code init: 50 takeoff: 100 
+17:12:41 Program started running.
+17:12:52 New command => DEPARTURE code init: 50 takeoff: 100 
+17:13:50 Program started running.
+17:13:59 New command => DEPARTURE code init: 50 takeoff: 100 
+17:14:45 Program started running.
+17:14:52 New command => DEPARTURE code init: 50 takeoff: 100 
+17:16:59 Program started running.
+17:17:24 Program started running.
+17:17:32 New command => DEPARTURE code init: 50 takeoff: 100 
+17:28:18 Program started running.
+17:28:26 New command => DEPARTURE code init: 50 takeoff: 100 
+17:31:18 Program started running.
+17:31:49 Program started running.
+17:31:57 New command => DEPARTURE code init: 50 takeoff: 100 
+17:33:23 Program started running.
+17:33:29 New command => DEPARTURE code init: 50 takeoff: 100 
+17:34:16 Program started running.
+17:34:25 New command => DEPARTURE code init: 50 takeoff: 100 
+17:35:25 Program started running.
+17:35:36 New command => DEPARTURE code init: 30 takeoff: 100 
+17:36:31 Program started running.
+17:36:38 New command => DEPARTURE code init: 30 takeoff: 100 
+17:39:13 Program started running.
+17:39:21 New command => DEPARTURE code init: 30 takeoff: 100 
+17:42:34 Program started running.
+17:42:42 New command => DEPARTURE code init: 30 takeoff: 100 
+17:44:58 Program started running.
+17:45:04 New command => DEPARTURE code init: 30 takeoff: 100 
+17:46:45 Program started running.
+17:46:52 New command => DEPARTURE code init: 30 takeoff: 100 
+17:48:57 Program started running.
+17:49:04 New command => DEPARTURE code init: 30 takeoff: 100 
+17:53:16 Program started running.
+17:53:23 New command => DEPARTURE code init: 30 takeoff: 100 
+17:57:25 Program started running.
+17:57:32 New command => DEPARTURE code init: 25 takeoff: 100 
+17:58:49 Program started running.
+17:58:56 New command => DEPARTURE code init: 25 takeoff: 100 
+18:00:57 Program started running.
+18:01:04 New command => DEPARTURE code init: 25 takeoff: 100 
+18:04:14 Program started running.
+18:04:21 New command => DEPARTURE code init: 25 takeoff: 100 
+18:06:04 Program started running.
+18:06:11 New command => DEPARTURE code init: 25 takeoff: 100 
+18:10:16 Program started running.
+18:11:22 Program started running.
+18:11:31 New command => DEPARTURE code init: 25 takeoff: 100 
+18:14:27 Program started running.
+18:14:35 New command => DEPARTURE code init: 25 takeoff: 100 
+18:15:12 Program started running.
+18:15:19 New command => DEPARTURE code init: 25 takeoff: 100 
+18:15:25 New departure code on Thread 1530660608
+18:17:48 Program started running.
+18:17:56 New command => DEPARTURE code init: 30 takeoff: 100 
+18:17:56 New departure code on Thread -29268224
+18:20:02 Program started running.
+18:20:08 New command => DEPARTURE code init: 25 takeoff: 100 
+18:20:08 New departure code on Thread 1259714304
+18:21:59 Program started running.
+18:22:06 New command => DEPARTURE code init: 25 takeoff: 100 
+18:22:11 New departure code on Thread 1458530048
+18:25:28 Program started running.
+18:25:35 New command => DEPARTURE code init: 25 takeoff: 100 
+18:25:41 New departure code on Thread 911472384
+18:27:00 Program started running.
+18:27:08 New command => DEPARTURE code init: 25 takeoff: 100 
+18:27:13 New departure code on Thread 806143744
+18:28:06 Program started running.
+18:28:14 New command => DEPARTURE code init: 25 takeoff: 100 
+18:28:19 New departure code on Thread 2014402304
+18:29:08 Program started running.
+18:29:16 New command => DEPARTURE code init: 25 takeoff: 100 
+18:29:39 New departure code on Thread -1863907584
+18:31:40 Program started running.
+18:31:47 New command => DEPARTURE code init: 25 takeoff: 100 
+18:31:52 New departure code on Thread 1898555136
+18:33:13 Program started running.
+18:33:20 New command => DEPARTURE code init: 25 takeoff: 100 
+18:33:26 New departure code on Thread -1759344896
+18:33:26 New departure code on Thread -1769933056
+18:33:27 New departure code on Thread -1778325760
+18:33:27 New departure code on Thread -1786718464
+18:33:28 New departure code on Thread -1795111168
+18:33:28 New departure code on Thread -1803503872
+18:33:29 New departure code on Thread -1879050496
+18:33:29 New departure code on Thread -1887443200
+18:33:30 New departure code on Thread -1895835904
+18:33:30 New departure code on Thread -1904228608
+18:33:31 New departure code on Thread -1912621312
+18:33:31 New departure code on Thread -1921014016
+18:33:32 New departure code on Thread -1929406720
+18:33:32 New departure code on Thread -2013268224
+18:33:33 New departure code on Thread -2021660928
+18:33:33 New departure code on Thread -2030053632
+18:33:34 New departure code on Thread -2038446336
+18:33:34 New departure code on Thread -2046839040
+18:33:35 New departure code on Thread -2055231744
+18:33:35 New departure code on Thread -2063624448
+18:33:36 New departure code on Thread -2072017152
+18:33:36 New departure code on Thread -2080409856
+18:33:37 New departure code on Thread -2088802560
+18:33:37 New departure code on Thread -2097195264
+18:33:38 New departure code on Thread -2105587968
+18:33:38 New departure code on Thread -2113980672
+18:33:39 New departure code on Thread -2122373376
+18:33:39 New departure code on Thread -2130766080
+18:33:40 New departure code on Thread -2139158784
+18:33:40 New departure code on Thread 2147415808
+18:33:41 New departure code on Thread 2139023104
+18:33:41 New departure code on Thread 2130630400
+18:33:42 New departure code on Thread 2122237696
+18:36:13 Program started running.
+18:36:19 New command => DEPARTURE code init: 25 takeoff: 100 
+18:36:25 New departure code on Thread 158279424
+18:36:38 Program started running.
+18:36:47 New command => DEPARTURE code init: 25 takeoff: 100 
+18:36:51 New departure code on Thread 1441019648
+18:36:59 New command => DEPARTURE code init: 50 takeoff: 100 
+18:37:03 New departure code on Thread 1430431488
+18:37:18 New command => DEPARTURE code init: 150 takeoff: 100 
+18:37:29 New command => DEPARTURE code init: 160 takeoff: 100 
+18:37:59 New departure code on Thread 1422038784
+18:40:06 Program started running.
+18:41:10 Program started running.
+18:41:12 New command => DEPARTURE code init: 160 takeoff: 100 
+18:41:28 New command => DEPARTURE code init: 150 takeoff: 100 
+18:41:35 New command => DEPARTURE code init: 170 takeoff: 100 
+18:41:50 New command => DEPARTURE code init: 100 takeoff: 100 
+18:42:00 New departure code on Thread 1551148800
+18:44:46 Program started running.
+18:44:52 New command => DEPARTURE code init: 50 takeoff: 100 
+18:44:55 New command => DEPARTURE code init: 60 takeoff: 100 
+18:46:57 Program started running.
+18:47:02 New command => DEPARTURE code init: 60 takeoff: 100 
+18:47:05 New command => DEPARTURE code init: 50 takeoff: 100 
+18:47:12 New command => DEPARTURE code init: 65 takeoff: 100 
+18:47:23 New departure code on Thread 1639753472
+18:47:28 New departure code on Thread 1629165312
+18:47:30 New departure code on Thread 1620772608
+18:47:39 New command => DEPARTURE code init: 100 takeoff: 100 
+18:47:40 New command => DEPARTURE code init: 100 takeoff: 100 
+18:47:48 New departure code on Thread 1543501568
+18:47:48 New departure code on Thread 1535108864
+18:48:21 Program started running.
+18:48:22 New command => DEPARTURE code init: 100 takeoff: 100 
+18:49:11 New departure code on Thread 2144761600

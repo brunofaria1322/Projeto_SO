@@ -1,6 +1,6 @@
 #include "header.h"
 
-commands * verify(char state, char * argv[], commands * head){
+commands * verify(char state, char argv[][MAX], commands * head){
 	if (state == 'd'){
 		if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"takeoff:")==0 && atoi(argv[6]) != 0){
 			char * com = command(7, argv);
@@ -16,7 +16,17 @@ commands * verify(char state, char * argv[], commands * head){
 			comm->dep=d;
 			comm->arr=NULL;
 			comm->init=d->init;
+
+			#ifdef DEBUG
+	      printf ("adicionando o comando %s\n",wcom);
+	    #endif
+
 			head =addCommand(comm, head);
+
+
+			#ifdef DEBUG
+				 printf ("Comando adicionado com init: %d\n", head->init);
+			 #endif
 
 		}
 		else{
@@ -46,7 +56,16 @@ commands * verify(char state, char * argv[], commands * head){
 			comm->arr=a;
 			comm->dep=NULL;
 			comm->init=a->init;
+
+	    #ifdef DEBUG
+	      printf ("adicionando o comando %s\n",wcom);
+	    #endif
+
 			head =addCommand(comm, head);
+
+			#ifdef DEBUG
+			 printf ("Comando adicionado\n");
+		 #endif
 			}
 
 		else{
