@@ -19,6 +19,12 @@ int main(int argc, char *argv[]){
 	Data data;
 	data=readConfig(data);
 	printData(data);
+
+	commands * head=(commands *) malloc(sizeof(commands));
+
+	pthread_t timer;
+	pthread_create (&timer, NULL,(void *)ftimer, data.ut, head);
+
 	pid_t id = fork();
 	if (id == 0){
 		torre();
@@ -31,15 +37,17 @@ int main(int argc, char *argv[]){
 		wait(NULL);
 	}
 
-	// Creates the named pipe if it doesn't exist yet
+	/*
+	// Create an array of 2 threads
 	#ifdef DEBUG
-		printf("Creating named pipe\n");
+		printf("Creating an array of 2 Threads\n");
 	#endif
 
-	if ((mkfifo(PIPE_NAME, O_CREAT|O_EXCL|0600)<0) && (errno!= EEXIST)) {
-		perror("Cannot create pipe: ");
-		exit(1);
-	}
+	pthread_t flights[2];					//flights[0]== DEPARTURE //flights[1]== Arrival
+
+	pthread_create ( flights[0], NULL, fDep, )
+	pthread_create ()
+	*/
 
 	// Create the shared memory segment if it doesn't exist yet
 	#ifdef DEBUG
@@ -64,12 +72,38 @@ int main(int argc, char *argv[]){
     return (1);
   }
 
+	args * command = (args *) malloc(sizeof(args));
+	int fd;
 
+	while (1){
+
+		if ((fd = open(PIPE_NAME, O_RDWR)) >= 0) { // O_RDONLY  só para leitura, WRONLY só para escrita
+
+			//ler do client
+			read(fd,command,sizeof(command))
+
+			verifica(command->argc, command->argv, head);
+		}
+
+	}
+
+
+writeLog("Program finished running.");
+}
+
+/*
+void fixInput(char *string){
+    string[strlen(string)-1]='\0';
+}
+*/
+
+//TODO: Juntar verifica com verify
+commands *verifica (int argc, char *argv[], commands * head){
 	if (argc > 0){
 		if (strcmp(argv[1],"DEPARTURE")==0){
 			char * com = command(argc, argv);
 			if(argc == 7){
-				pipew('d',argv);
+				verify('d',argv);
 			}
 			else{
 				printf("Invalid number of arguments (%d). Command takes 6 arguments - DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}",argc);
@@ -81,7 +115,7 @@ int main(int argc, char *argv[]){
 		else if (strcmp(argv[1],"ARRIVAL")==0){
 			char * com = command(argc, argv);
 			if(argc == 9){
-				pipew('a',argv);
+				verify('a',argv);
 			}
 			else{
 			printf("Invalid number of arguments (%d). Command takes 8 arguments - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}",argc);
@@ -98,17 +132,88 @@ int main(int argc, char *argv[]){
 			writeLog(wcom);
 		}
 	}
-
-writeLog("Program finished running.");
+	return head;
 }
-
-/*
-void fixInput(char *string){
-    string[strlen(string)-1]='\0';
-}
-*/
 
 void printData(Data data){
   printf("%d\n%d, %d\n%d, %d\n%d, %d\n%d\n%d\n",data.ut,data.T,data.dt,data.L,data.dl,data.min,data.max,data.D,data.A);
 	printf("\n");
 }
+
+void ftimer(int ut, commands * head){
+	int t=0;
+	while (1){
+		while (t==head.init) {
+			if (head->arr!=NULL){
+				pthread_t arriv;
+				pthread_create(&arriv,NULL,(void *)fArrival,head->arr);
+			}
+			else {
+				pthread_t depar;
+				pthread_create(&depar,NULL,(void *)fDepart,head->dep);
+			}
+			else{
+				perror("Commands Linked List");
+			}
+			head=removeFirstCommand(head);
+		}
+
+		sleep (ut/1000);
+		t++;
+	}
+}
+
+commands* removeFirstCommand(commands * head){
+  // Store head node
+  commands* temp = head;
+  head = temp->next;   			// Changed head
+  free(temp);               // free old head
+  return head;
+}
+
+commands* addCommand(commands * node, commands * head){
+	commands *tmp, *ant;
+  if (head==NULL)
+      head=node;
+
+  else{
+
+      if (head->init>node->init) {
+          node->next=head;
+          head=node;
+      }
+      else {
+          ant=head;
+          tmp=head->next;
+          while ((tmp!=NULL) && (tmp->init<node->init) {
+              ant=tmp;
+              tmp=tmp->next;
+          }
+
+          node->next=tmp;
+          ant->next=node;
+      }
+		}
+  return(head);
+}
+
+void fDepart(Departure * departure){
+	char buf[MAX];
+	sprintf(buf,"New departure %s on Thread %d",departure->code,(int ) pthread_self());
+	writeLog(buf);
+
+	//Continue
+}
+
+void fArrival(Arrival * arrival){
+	char buf[MAX];
+	sprintf(buf,"New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
+	writeLog(buf);
+
+	//continue
+}
+/*
+float getTime(int ut){
+	return (((clock()/CLOCK_PER_SEC)*1000)/ut)
+}
+*/

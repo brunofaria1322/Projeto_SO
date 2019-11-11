@@ -1,22 +1,23 @@
 #include "header.h"
 
-void pipew(char state, char*argv[]){
-	int fd;
-	if ((fd = open(PIPE_NAME, O_RDWR)) < 0) { // O_RDONLY  só para leitura, WRONLY só para escrita
-		perror("Cannot open pipe for writing: ");
-		exit(1);
-	}
+commands * verify(char state, char * argv[], commands * head){
 	if (state == 'd'){
 		if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"takeoff:")==0 && atoi(argv[6]) != 0){
 			char * com = command(7, argv);
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
 			strcpy(wcom,"New command => "); strcat(wcom,com);
 			writeLog(wcom);
+
 			Departure *d = (Departure*)malloc(sizeof(Departure));
 			d->code = argv[2];
 			d->init = atoi(argv[4]);
 			d->takeoff = atoi(argv[6]);
-			write(fd, &d, sizeof(Departure));
+			commands * com= malloc(sizeof(commands));
+			com->dep=d;
+			com->arr=NULL;
+			com->init=d->init;
+			head =addCommand(com, head);
+
 		}
 		else{
 			#ifdef DEBUG
@@ -35,13 +36,19 @@ void pipew(char state, char*argv[]){
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
 			strcpy(wcom,"New command => "); strcat(wcom,com);
 			writeLog(wcom);
+
 			Arrival *a = (Arrival*)malloc(sizeof(Arrival));
 			a->code = argv[2];
 			a->init = atoi(argv[4]);
 			a->eta = atoi(argv[6]);
 			a->fuel = atoi(argv[8]);
-			write(fd, &a, sizeof(Departure));
-		}
+			commands * com= malloc(sizeof(commands));
+			com->arr=a;
+			com->dep=NULL;
+			com->init=a->init;
+			head =addCommand(com, head);
+			}
+
 		else{
 			#ifdef DEBUG
 				printf("Error: 'initial time', 'time to runway' and 'initial fuel' must be floats - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}");
@@ -56,7 +63,7 @@ void pipew(char state, char*argv[]){
 	else{
 		perror("Wrong state value at pipew. state shoud be 'd' for depart or 'a' for arrival.");
 		exit(1);
-		
-	}
 
+	}
+	return head;
 }

@@ -18,6 +18,11 @@
 #define PIPE_NAME   "input_pipe"
 
 typedef struct{
+  int argc;
+  char *argv[];
+}args;
+
+typedef struct{
   int ut;   //Unity of Time (milisseconds)
   int T;    //Takeoff duration (in ut)
   int dt;   //Duration betwen Takeoffs (in ut)
@@ -28,6 +33,13 @@ typedef struct{
   int D;    //number max of Departs of the sistem
   int A;    //number max of Arrivals of the sistema
 }Data;
+
+typedef struct commands{
+  Departure * dep;
+  Arrival * arr;
+  int init;
+  commands * next;
+}commands;
 
 typedef struct{
   int flights_created;      //Total number of flights created
@@ -45,6 +57,8 @@ typedef struct{
   int fuel;                 //fuel of flight
   int eta;                  //estimated time of arrival
   int etd;                  //estimated time to depart
+
+
 }SharedMemory;
 
 typedef struct{
@@ -59,10 +73,14 @@ typedef struct{
 	float eta;
 	float fuel;
 }Arrival;
+
+commands* removeFirstCommand(commands * head);
+void ftimer(int ut);
+float getTime(int ut);
 void printData(Data data);
 Data readConfig(Data data);
 void torre();
 void writeLog(char *log);
-void pipew(char state,char* argv[]);  //state can be "d" for depart or "a" for arrival
+void verify(char state,char* argv[], commands * head);  //state can be "d" for depart or "a" for arrival
 char* command(int argc, char *argv[]);
 //void fixInput(char *string);
