@@ -1,16 +1,28 @@
-#include <"stdio.h">
-#include <"stdlib.h">
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+#include <sys/stat.h>
+#include <sys/types.h>
+#include <fcntl.h>
+#include <errno.h>
+
 
 typedef struct{
   int argc;
   char *argv[];
 }args;
 
+#define PIPE_NAME   "input_pipe"
 
-int int main(int argc, char *argv[]) {
+int main(int argc, char *argv[]) {
   args * command = (args *) malloc (sizeof(args));
   command->argc=argc;
-  command->argv=argv;
+  int i;
+  for (i=0;i<argc;i++){
+    command->argv[i]=argv[i];
+    printf ("Arg[%d] - %s\n",i,command->argv[i]);
+  }
 
 	// Creates the named pipe if it doesn't exist yet
 	#ifdef DEBUG
@@ -31,11 +43,13 @@ int int main(int argc, char *argv[]) {
   if ((fd = open(PIPE_NAME, O_RDWR)) < 0) { // O_RDONLY  só para leitura, WRONLY só para escrita
     perror("Cannot open pipe for writing: ");
     exit(1);
+  }
 
   write(fd, &command, sizeof(args));
 
+  for (i=0;i<command->argc;i++){
+    printf ("Arg[%d] - %s\n",i,command->argv[i]);
+  }
   close(fd);
-
-
-return 0;
+  return 0;
 }

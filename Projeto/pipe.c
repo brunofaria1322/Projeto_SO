@@ -12,11 +12,11 @@ commands * verify(char state, char * argv[], commands * head){
 			d->code = argv[2];
 			d->init = atoi(argv[4]);
 			d->takeoff = atoi(argv[6]);
-			commands * com= malloc(sizeof(commands));
-			com->dep=d;
-			com->arr=NULL;
-			com->init=d->init;
-			head =addCommand(com, head);
+			commands * comm= malloc(sizeof(commands));
+			comm->dep=d;
+			comm->arr=NULL;
+			comm->init=d->init;
+			head =addCommand(comm, head);
 
 		}
 		else{
@@ -42,11 +42,11 @@ commands * verify(char state, char * argv[], commands * head){
 			a->init = atoi(argv[4]);
 			a->eta = atoi(argv[6]);
 			a->fuel = atoi(argv[8]);
-			commands * com= malloc(sizeof(commands));
-			com->arr=a;
-			com->dep=NULL;
-			com->init=a->init;
-			head =addCommand(com, head);
+			commands * comm= malloc(sizeof(commands));
+			comm->arr=a;
+			comm->dep=NULL;
+			comm->init=a->init;
+			head =addCommand(comm, head);
 			}
 
 		else{

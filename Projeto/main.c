@@ -21,9 +21,15 @@ int main(int argc, char *argv[]){
 	printData(data);
 
 	commands * head=(commands *) malloc(sizeof(commands));
+	head=NULL;
+
+	info * inf;
+	inf = (info *)malloc(sizeof(info));
+	inf->ut=data.ut;
+	inf->head=head;
 
 	pthread_t timer;
-	pthread_create (&timer, NULL,(void *)ftimer, data.ut, head);
+	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
 
 	pid_t id = fork();
 	if (id == 0){
@@ -75,14 +81,20 @@ int main(int argc, char *argv[]){
 	args * command = (args *) malloc(sizeof(args));
 	int fd;
 
+	printf("Vou pro while\n");
 	while (1){
 
 		if ((fd = open(PIPE_NAME, O_RDWR)) >= 0) { // O_RDONLY  só para leitura, WRONLY só para escrita
 
 			//ler do client
-			read(fd,command,sizeof(command))
-
-			verifica(command->argc, command->argv, head);
+			read(fd,&command,sizeof(command));
+			//recebe bem
+			printf ("%d aaaaaaaaaa\n",command->argc);
+			int i;
+			for (i=0;i<command->argc;i++){
+				printf ("Arg[%d] - %s\n",i,command->argv[i]);
+			}
+			head=verifica(command->argc, command->argv, head);
 		}
 
 	}
@@ -98,12 +110,12 @@ void fixInput(char *string){
 */
 
 //TODO: Juntar verifica com verify
-commands *verifica (int argc, char *argv[], commands * head){
+commands * verifica (int argc, char *argv[], commands * head){
 	if (argc > 0){
 		if (strcmp(argv[1],"DEPARTURE")==0){
 			char * com = command(argc, argv);
 			if(argc == 7){
-				verify('d',argv);
+				verify('d',argv, head);
 			}
 			else{
 				printf("Invalid number of arguments (%d). Command takes 6 arguments - DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}",argc);
@@ -115,7 +127,7 @@ commands *verifica (int argc, char *argv[], commands * head){
 		else if (strcmp(argv[1],"ARRIVAL")==0){
 			char * com = command(argc, argv);
 			if(argc == 9){
-				verify('a',argv);
+				verify('a',argv,head);
 			}
 			else{
 			printf("Invalid number of arguments (%d). Command takes 8 arguments - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}",argc);
@@ -140,25 +152,28 @@ void printData(Data data){
 	printf("\n");
 }
 
-void ftimer(int ut, commands * head){
-	int t=0;
+void ftimer(void * infor){
+	info * inf= (info *) infor;
+	int ut= inf->ut;
+	printf("UT %d\n",ut);
+	commands * head = inf->head;
+	int t=0, ti=1000*ut;
 	while (1){
-		while (t==head.init) {
-			if (head->arr!=NULL){
-				pthread_t arriv;
-				pthread_create(&arriv,NULL,(void *)fArrival,head->arr);
+		if(head){
+			while (t==head->init) {
+				printf("Tou no while com head_init %d\n",t);
+				if (head->arr!=NULL){
+					pthread_t arriv;
+					pthread_create(&arriv,NULL,(void *)fArrival,head->arr);
+				}
+				else {
+					pthread_t depar;
+					pthread_create(&depar,NULL,(void *)fDepart,head->dep);
+				}
+				head=removeFirstCommand(head);
 			}
-			else {
-				pthread_t depar;
-				pthread_create(&depar,NULL,(void *)fDepart,head->dep);
-			}
-			else{
-				perror("Commands Linked List");
-			}
-			head=removeFirstCommand(head);
 		}
-
-		sleep (ut/1000);
+		usleep (ti);
 		t++;
 	}
 }
@@ -185,7 +200,7 @@ commands* addCommand(commands * node, commands * head){
       else {
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && (tmp->init<node->init) {
+          while ((tmp!=NULL) && (tmp->init<node->init)) {
               ant=tmp;
               tmp=tmp->next;
           }

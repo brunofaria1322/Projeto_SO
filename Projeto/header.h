@@ -34,11 +34,26 @@ typedef struct{
   int A;    //number max of Arrivals of the sistema
 }Data;
 
+
+typedef struct{
+	char* code;
+	float init;
+	float takeoff;
+}Departure;
+
+typedef struct{
+	char* code;
+	float init;
+	float eta;
+	float fuel;
+}Arrival;
+
+
 typedef struct commands{
   Departure * dep;
   Arrival * arr;
   int init;
-  commands * next;
+  struct commands * next;
 }commands;
 
 typedef struct{
@@ -58,29 +73,25 @@ typedef struct{
   int eta;                  //estimated time of arrival
   int etd;                  //estimated time to depart
 
-
 }SharedMemory;
 
 typedef struct{
-	char* code;
-	float init;
-	float takeoff;
-}Departure;
-
-typedef struct{
-	char* code;
-	float init;
-	float eta;
-	float fuel;
-}Arrival;
+    int ut;
+    commands * head;
+}info;
 
 commands* removeFirstCommand(commands * head);
-void ftimer(int ut);
-float getTime(int ut);
+commands* addCommand(commands * node, commands * head);
+void ftimer(void * infor);
+//float getTime(int ut);
 void printData(Data data);
 Data readConfig(Data data);
 void torre();
 void writeLog(char *log);
-void verify(char state,char* argv[], commands * head);  //state can be "d" for depart or "a" for arrival
+commands * verify(char state,char* argv[], commands * head);  //state can be "d" for depart or "a" for arrival
 char* command(int argc, char *argv[]);
+commands * verifica (int argc, char *argv[], commands * head);
+
+void fDepart(Departure * departure);
+void fArrival(Arrival * arrival);
 //void fixInput(char *string);
