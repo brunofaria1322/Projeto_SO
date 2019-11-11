@@ -246,3 +246,25 @@
 18:48:21 Program started running.
 18:48:22 New command => DEPARTURE code init: 100 takeoff: 100 
 18:49:11 New departure code on Thread 2144761600
+19:58:44 Program started running.
+20:00:28 Program started running.
+20:00:32 Program started running.
+20:01:03 Program started running.
+20:01:16 New command => DEPARTURE TP01 init: 20 takeoff: 50 
+20:02:41 Program started running.
+20:02:45 New command => DEPARTURE TP01 init: 20 takeoff: 50 
+20:02:51 New departure TP01 on Thread -359688448
+20:06:12 Program started running.
+20:06:19 Program started running.
+20:57:32 Program started running.
+20:58:35 Program started running.
+20:58:43 New command => DEPARTURE TP01 init: 80 takeoff: 100 
+20:59:05 New command => DEPARTURE TP01 init: 90 takeoff: 100 
+20:59:15 New departure TP01 on Thread -2071275776
+20:59:20 New departure TP01 on Thread 2145285888
+21:00:25 Program started running.
+21:00:33 New command => DEPARTURE TP01 init: 50 takeoff: 100 
+21:00:50 New departure TP01 on Thread 1534797568
+23:01:33 Program started running.
+23:03:17 Program started running.
+23:03:23 New command => DEPARTURE TP01 init: 90 takeoff: 100 

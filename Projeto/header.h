@@ -12,6 +12,7 @@
 #include <errno.h>
 #include <time.h>
 #include <pthread.h>
+#include <sys/msg.h>
 
 #define MAX 256
 //#define DEBUG   //remove this line to remove debug messages

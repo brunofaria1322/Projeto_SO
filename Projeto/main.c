@@ -6,9 +6,8 @@ int main(int argc, char *argv[]){
 	Data data;
 	data=readConfig(data);
 	
-	#ifdef DEBUG
-		printData(data);
-	#endif
+	
+	printData(data);
 
 	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
@@ -46,10 +45,8 @@ int main(int argc, char *argv[]){
 	*/
 
 	// Create the shared memory segment if it doesn't exist yet
-	#ifdef DEBUG
-		printf("Creating the shared memory segment\n");
-	#endif
 
+	printf("Creating the shared memory segment\n");
 	int shmid;
 	if ((shmid = shmget(IPC_PRIVATE, sizeof(SharedMemory), IPC_CREAT))< 0) {
 		perror("Couldn't get/create the shared memory segment!\n");
@@ -58,9 +55,7 @@ int main(int argc, char *argv[]){
 
 	//TODO: Complete this semaphore part
 	// Create an array of 2 semaphores
-	#ifdef DEBUG
-		printf("Creating an array of 2 semaphores\n");
-	#endif
+	printf("Creating an array of 2 semaphores\n");
 
 	int semid;
 	if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0777)) == -1 ){
@@ -71,6 +66,15 @@ int main(int argc, char *argv[]){
 	int fd,i,num;
 	char buff[MAX];
 	char args[32][MAX];
+	 
+	/* Cria uma message queue */
+	int mqid;
+	printf("Creating message queue.");
+	mqid = msgget(IPC_PRIVATE, IPC_CREAT|0777);
+	if (mqid < 0){
+	   	perror("creating message queue.");
+	      	exit(0);
+	}
 
 	while (1){
 
@@ -169,9 +173,9 @@ void ftimer(info * inf){
 
 	int t=0, ti=1000*inf->ut;
 	while (1){
-		#ifdef DEBUG
+		if(t%30==0){
 			printf("Time: %d\n",t);
-		#endif
+		}
 		if(inf->head!=NULL){
 			#ifdef DEBUG
 				printf("tou no while... existe head t=%d, init=%d\n",t,inf->head->init);
@@ -202,7 +206,7 @@ void ftimer(info * inf){
 				inf->head=removeFirstCommand(inf->head);
 				#ifdef DEBUG
 					printf("removido\n");
-				#enif
+				#endif
 			}
 			//sleep(2);		//remove
 			//usleep (ti);
