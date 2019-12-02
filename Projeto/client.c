@@ -10,7 +10,8 @@
 
 
 #define PIPE_NAME   "input_pipe"
-
+#define DEBUG
+#define MAX 256
 
 int main(int argc, char *argv[]) {
 
@@ -20,26 +21,17 @@ int main(int argc, char *argv[]) {
       printf ("Arg[%d] - %s\n",i,argv[i]);
     }
 
-	// Creates the named pipe if it doesn't exist yet
-	
-		printf("Creating named pipe\n");
-	#endif
-
-	if ((mkfifo(PIPE_NAME, O_CREAT|O_EXCL|0600)<0) && (errno!= EEXIST)) {
-		perror("Cannot create pipe: ");
-		exit(1);
-	}
-
   // Openning the named pipe
-  #ifdef DEBUG
     printf("Openning named pipe\n");
   #endif
 
   int fd;
-  if ((fd = open(PIPE_NAME, O_RDWR)) < 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
+  char buff[MAX];
+  if ((fd = open(PIPE_NAME, O_WRONLY)) < 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
     perror("Cannot open pipe for writing: ");
-    exit(1);
+    exit(0);
   }
+
 
   write(fd,&argc, sizeof(argc));
 
@@ -47,9 +39,12 @@ int main(int argc, char *argv[]) {
     #ifdef DEBUG
       printf ("Sending Arg[%d] - %s\n",i,argv[i]);
     #endif
-    write(fd,argv[i],strlen(argv[i])+1);
-    usleep(100);      //should be semaphore
+    strcpy(buff,argv[i]);
+    write(fd,buff,sizeof(buff));
+    //usleep(100);      //should be semaphore
   }
+
+  usleep(100);
   close(fd);
   return 0;
 }

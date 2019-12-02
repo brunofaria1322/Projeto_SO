@@ -2,12 +2,52 @@
 
 int main(int argc, char *argv[]){
 
-	writeLog("Program started running.");
+	//Initializing
+	//Variables
+	int fd,i,num;
+	char buff[MAX];
+	char args[32][MAX];
+	pthread_t timer;
+
+
+	#ifdef DEBUG
+		printf("Opening file log.txt\n");
+	#endif
+
+	if ((f= fopen("log.txt" ,"a+")) == NULL){
+			perror("Couldn't open the file log.txt");
+			exit(0);
+	}
+
+	// Creates the named pipe if it doesn't exist yet
+	#ifdef DEBUG
+		printf("Creating named pipe\n");
+	#endif
+
+	unlink(PIPE_NAME);
+	if ((mkfifo(PIPE_NAME, O_CREAT|O_EXCL|0600)<0) && (errno!= EEXIST)) {
+		perror("Cannot create pipe");
+		exit(0);
+	}
+
+	// Create the shared memory segment if it doesn't exist yet
+	#ifdef DEBUG
+	printf("Creating the shared memory segment\n");
+	#endif
+
+	int shmid;
+	if ((shmid = shmget(IPC_PRIVATE, sizeof(SharedMemory), IPC_CREAT|0600))< 0) {
+		perror("Couldn't get/create the shared memory segment!\n");
+		exit(0);
+	}
+
+	writeLog(f, "Program started running.");
 	Data data;
 	data=readConfig(data);
-	
-	
+
+	#ifdef DEBUG
 	printData(data);
+	#endif
 
 	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
@@ -17,20 +57,29 @@ int main(int argc, char *argv[]){
 	inf->ut=data.ut;
 	inf->head=head;
 
-	pthread_t timer;
-	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
+	// Create an array of 2 semaphores
+	#ifdef DEBUG
+	printf("Creating an array of 2 semaphores\n");
+	#endif
 
-	pid_t id = fork();
-	if (id == 0){
-		torre();
-		exit(0);
+	int semid;
+	if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0600)) == -1 ){
+    perror("Could not get the semaphore set!");
+    exit(0);
+  }
+
+
+	/* Cria uma message queue */
+	int mqid;
+	#ifdef DEBUG
+	printf("Creating message queue.\n");
+	#endif
+	mqid = msgget(IPC_PRIVATE, IPC_CREAT|0600);
+	if (mqid < 0){
+	   	perror("creating message queue.");
+	    exit(0);
 	}
-	else if (id <0){
-		printf("the creation of a child process was unsuccessful.");
-	}
-	else{
-		wait(NULL);
-	}
+
 
 	/*
 	// Create an array of 2 threads
@@ -44,37 +93,21 @@ int main(int argc, char *argv[]){
 	pthread_create ()
 	*/
 
-	// Create the shared memory segment if it doesn't exist yet
 
-	printf("Creating the shared memory segment\n");
-	int shmid;
-	if ((shmid = shmget(IPC_PRIVATE, sizeof(SharedMemory), IPC_CREAT))< 0) {
-		perror("Couldn't get/create the shared memory segment!\n");
-		exit(1);
+	//main
+	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
+
+	pid_t id = fork();
+	if (id == 0){
+		torre();
+		exit(0);
+	}
+	else if (id <0){
+		perror("the creation of a child process was unsuccessful.");
+		exit(0);
 	}
 
-	//TODO: Complete this semaphore part
-	// Create an array of 2 semaphores
-	printf("Creating an array of 2 semaphores\n");
-
-	int semid;
-	if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0777)) == -1 ){
-    perror("Could not get the semaphore set!");
-    return (1);
-  }
-
-	int fd,i,num;
-	char buff[MAX];
-	char args[32][MAX];
-	 
-	/* Cria uma message queue */
-	int mqid;
-	printf("Creating message queue.");
-	mqid = msgget(IPC_PRIVATE, IPC_CREAT|0777);
-	if (mqid < 0){
-	   	perror("creating message queue.");
-	      	exit(0);
-	}
+	int total,n;
 
 	while (1){
 
@@ -85,9 +118,15 @@ int main(int argc, char *argv[]){
 
 
 		  for (i=0;i<num;i++){
-	    	read(fd,buff, sizeof(buff));
+				n=total=0;
+				while (total < MAX) {
+					n =  read(fd, (char*)buff + total,sizeof(buff)-total);
+					total+= n;
+				}
 				strcpy(args[i],buff);
 		  }
+
+			close(fd);
 
 			//recebe bem
 			#ifdef DEBUG
@@ -97,17 +136,20 @@ int main(int argc, char *argv[]){
 				}
 			#endif
 
-			close(fd);
-			inf->head=verifica(num, args, inf->head);
+			inf->head=verify(num, args, inf->head);
 			#ifdef DEBUG
-				printf ("head->init: %d\ni",inf->head->init);
+				if (inf->head) printf ("head->init: %d\ni",inf->head->init);
 			#endif
 		}
 
 	}
 
 
-writeLog("Program finished running.");
+	//Terminating ad Closing everything
+	wait(NULL);
+	writeLog(f,"Program finished running.");
+	unlink(PIPE_NAME);
+	fclose(f);
 }
 
 /*
@@ -115,50 +157,6 @@ void fixInput(char *string){
     string[strlen(string)-1]='\0';
 }
 */
-
-//TODO: Juntar verifica com verify
-commands * verifica (int argc, char argv[][MAX], commands * head){
-	if (argc > 0){
-		if (strcmp(argv[1],"DEPARTURE")==0){
-			char * com = command(argc, argv);
-			if(argc == 7){
-				head=verify('d',argv, head);
-			}
-			else{
-				#ifdef DEBUG
-					printf("Invalid number of arguments (%d). Command takes 6 arguments - DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}",argc);
-				#endif
-				char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
-				strcpy(wcom,"Wrong command => "); strcat(wcom,com);
-				writeLog(wcom);
-			}
-		}
-		else if (strcmp(argv[1],"ARRIVAL")==0){
-			char * com = command(argc, argv);
-			if(argc == 9){
-				head=verify('a',argv,head);
-			}
-			else{
-			#ifdef DEBUG
-				printf("Invalid number of arguments (%d). Command takes 8 arguments - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}",argc);
-			#endif
-			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
-			strcpy(wcom,"Wrong command => "); strcat(wcom,com);
-			writeLog(wcom);
-			}
-		}
-		else{
-			#ifdef DEBUG
-				printf("Unknown command (%s). Available commands are DEPARTURE and ARRIVAL.",argv[1]);
-			#endif
-			char * com = command(argc, argv);
-			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
-			strcpy(wcom,"Wrong command => "); strcat(wcom,com);
-			writeLog(wcom);
-		}
-	}
-	return head;
-}
 
 void printData(Data data){
   printf("%d\n%d, %d\n%d, %d\n%d, %d\n%d\n%d\n",data.ut,data.T,data.dt,data.L,data.dl,data.min,data.max,data.D,data.A);
@@ -282,7 +280,7 @@ void *fDepart(Departure * departure){
 	#endif
 	char buf[MAX];
 	sprintf(buf,"New departure %s on Thread %d",departure->code,(int ) pthread_self());
-	writeLog(buf);
+	writeLog(f,buf);
 
 	//Continue
 	#ifdef DEBUG
@@ -298,7 +296,7 @@ void *fArrival(Arrival * arrival){
 	#endif
 	char buf[MAX];
 	sprintf(buf,"New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
-	writeLog(buf);
+	writeLog(f,buf);
 
 	//continue
 	#ifdef DEBUG

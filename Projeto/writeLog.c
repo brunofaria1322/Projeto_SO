@@ -1,16 +1,13 @@
 #include "header.h"
 
-void writeLog(char *log){
-  FILE *f;
+void writeLog(FILE *f, char *log){
+
+  if (f == NULL){
+			perror("Couldn't write the file log.txt cause its not oppened yet");
+			exit(1);
+	}
+
   char buff[64];
-
-  
-
-  if ((f= fopen("log.txt" ,"a+")) == NULL){
-      perror("Couldn't open the file log.txt");
-      exit(1);
-  }
-
   time_t t = time(0);
   struct tm *tmp = gmtime(&t);
   strftime(buff, sizeof(buff), "%X", tmp);
@@ -18,5 +15,4 @@ void writeLog(char *log){
   fprintf(f, "%s %s\n", buff, log);
   printf("\n%s %s\n", buff, log);
 
-  fclose(f);
 }

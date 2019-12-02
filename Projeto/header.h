@@ -15,7 +15,7 @@
 #include <sys/msg.h>
 
 #define MAX 256
-//#define DEBUG   //remove this line to remove debug messages
+#define DEBUG   //remove this line to remove debug messages
 #define PIPE_NAME   "input_pipe"
 
 typedef struct{
@@ -76,6 +76,7 @@ typedef struct{
     commands * head;
 }info;
 
+
 commands* removeFirstCommand(commands * head);
 commands* addCommand(commands * node, commands * head);
 void ftimer(info * inf);
@@ -83,11 +84,13 @@ void ftimer(info * inf);
 void printData(Data data);
 Data readConfig(Data data);
 void torre();
-void writeLog(char *log);
-commands * verify(char state,char argv[][MAX], commands * head);  //state can be "d" for depart or "a" for arrival
+void writeLog(FILE *f, char *log);
 char* command(int argc, char argv[][MAX]);
-commands * verifica (int argc, char argv[][MAX], commands * head);
+commands * verify (int argc, char argv[][MAX], commands * head);
 
 void *fDepart(Departure * departure);
 void *fArrival(Arrival * arrival);
 //void fixInput(char *string);
+
+//Global Variables
+	FILE *f;
