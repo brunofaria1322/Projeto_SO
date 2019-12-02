@@ -44,6 +44,11 @@ typedef struct{
 	float fuel;
 }Arrival;
 
+typedef struct{
+	long mtype;
+	Departure* dep;
+	Arrival* arr;
+}Msg_deparr;
 
 typedef struct commands{
   Departure * dep;
@@ -83,7 +88,7 @@ void ftimer(info * inf);
 //float getTime(int ut);
 void printData(Data data);
 Data readConfig(Data data);
-void torre();
+void tower();
 void writeLog(FILE *f, char *log);
 char* command(int argc, char argv[][MAX]);
 commands * verify (int argc, char argv[][MAX], commands * head);
@@ -93,4 +98,6 @@ void *fArrival(Arrival * arrival);
 //void fixInput(char *string);
 
 //Global Variables
-	FILE *f;
+FILE *f;
+int running;
+int mqid;

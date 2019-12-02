@@ -3,6 +3,8 @@
 int main(int argc, char *argv[]){
 
 	//Initializing
+	running=1;
+
 	//Variables
 	int fd,i,num;
 	char buff[MAX];
@@ -69,11 +71,11 @@ int main(int argc, char *argv[]){
   }
 
 
-	/* Cria uma message queue */
-	int mqid;
+	// Create the message queue
 	#ifdef DEBUG
 	printf("Creating message queue.\n");
 	#endif
+
 	mqid = msgget(IPC_PRIVATE, IPC_CREAT|0600);
 	if (mqid < 0){
 	   	perror("creating message queue.");
@@ -93,13 +95,16 @@ int main(int argc, char *argv[]){
 	pthread_create ()
 	*/
 
+	//Signals
+	signal (SIGINT,sigint);
+	signal (SIGUSR1,sigusr1);
 
 	//main
 	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
 
 	pid_t id = fork();
 	if (id == 0){
-		torre();
+		tower();
 		exit(0);
 	}
 	else if (id <0){
@@ -109,7 +114,7 @@ int main(int argc, char *argv[]){
 
 	int total,n;
 
-	while (1){
+	while (running){
 
 		if ((fd = open(PIPE_NAME,  O_RDWR)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
 
@@ -158,6 +163,15 @@ void fixInput(char *string){
 }
 */
 
+//Exit signal
+void sigint (int signum){
+	running =0;
+}
+
+void sigusr (int signum){
+	//mostrar estatistcas
+}
+
 void printData(Data data){
   printf("%d\n%d, %d\n%d, %d\n%d, %d\n%d\n%d\n",data.ut,data.T,data.dt,data.L,data.dl,data.min,data.max,data.D,data.A);
 	printf("\n");
@@ -188,7 +202,6 @@ void ftimer(info * inf){
 					#endif
 					pthread_t arriv;
 					pthread_create(&arriv,NULL,(void *)fArrival,inf->head->arr);
-					//usleep (ti);
 				}
 				else {
 					#ifdef DEBUG
@@ -196,7 +209,6 @@ void ftimer(info * inf){
 					#endif
 					pthread_t depar;
 					pthread_create(&depar,NULL,(void *)fDepart,inf->head->dep);
-					//usleep (ti);
 				}
 				#ifdef DEBUG
 					printf("removendo primeiro\n");
@@ -206,8 +218,6 @@ void ftimer(info * inf){
 					printf("removido\n");
 				#endif
 			}
-			//sleep(2);		//remove
-			//usleep (ti);
 		}
 		usleep (ti);
 		t++;
@@ -281,6 +291,11 @@ void *fDepart(Departure * departure){
 	char buf[MAX];
 	sprintf(buf,"New departure %s on Thread %d",departure->code,(int ) pthread_self());
 	writeLog(f,buf);
+
+	Msg_deparr msgd;
+	msgd.mtype = 1;
+	msgd.dep=departure;
+	printf("%d\n",msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0)>=0);
 
 	//Continue
 	#ifdef DEBUG
