@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 	//main
 	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
 
-	pid_t pid = fork();
+	pid = fork();
 	if (pid == 0){
 		tower();
 		exit(0);
@@ -156,7 +156,7 @@ int main(int argc, char *argv[]){
 //Exit signal
 void sigint (int signum){
 	//Terminating ad Closing everything
-	if(getpid()!=0){
+	if(pid()!=0){
 		wait(NULL);
 		writeLog(f,"Program finished running.");
 		unlink(PIPE_NAME);
