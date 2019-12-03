@@ -156,7 +156,7 @@ int main(int argc, char *argv[]){
 //Exit signal
 void sigint (int signum){
 	//Terminating ad Closing everything
-	if(pid()!=0){
+	if(pid!=0){
 		wait(NULL);
 		writeLog(f,"Program finished running.");
 		unlink(PIPE_NAME);
