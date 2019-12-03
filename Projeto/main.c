@@ -36,11 +36,12 @@ int main(int argc, char *argv[]){
 	printf("Creating the shared memory segment\n");
 	#endif
 
-	int shmid;
 	if ((shmid = shmget(IPC_PRIVATE, sizeof(SharedMemory), IPC_CREAT|0600))< 0) {
 		perror("Couldn't get/create the shared memory segment!\n");
 		exit(0);
 	}
+
+	mem = (SharedMemory*) shmat(shmid, NULL, 0);
 
 	writeLog(f, "Program started running.");
 	Data data;
@@ -63,7 +64,6 @@ int main(int argc, char *argv[]){
 	printf("Creating an array of 2 semaphores\n");
 	#endif
 
-	int semid;
 	if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0600)) == -1 ){
     perror("Could not get the semaphore set!");
     exit(0);
@@ -75,8 +75,7 @@ int main(int argc, char *argv[]){
 	printf("Creating message queue.\n");
 	#endif
 
-	mqid = msgget(IPC_PRIVATE, IPC_CREAT|0600);
-	if (mqid < 0){
+	if((mqid = msgget(IPC_PRIVATE, IPC_CREAT|0700))==-1){
 	   	perror("creating message queue.");
 	    exit(0);
 	}
@@ -157,10 +156,13 @@ int main(int argc, char *argv[]){
 void sigint (int signum){
 	//Terminating ad Closing everything
 	if(pid!=0){
-		wait(NULL);
+		wait(NULL);												//wait for child to terminate
 		writeLog(f,"Program finished running.");
-		unlink(PIPE_NAME);
-		fclose(f);
+		sem_close(semid);									//closes semaphore
+		unlink(PIPE_NAME);								//unlink linked pipe
+		fclose(f);												//close log file
+		shmctl(shmid, IPC_RMID, NULL);		//closes shared memory
+		msgctl(mqid, IPC_RMID, NULL);			//closes message queue
 		exit(0);
 	}
 	else{
@@ -297,7 +299,7 @@ void *fDepart(Departure * departure){
 	msgd.mtype = 1;
 	msgd.dep=departure;
 	msgd.arr=NULL;
-	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
+	msgsnd(mqid, &msgd , sizeof(Msg_deparr), 0);
 
 	//Continue
 	#ifdef DEBUG

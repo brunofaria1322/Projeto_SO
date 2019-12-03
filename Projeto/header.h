@@ -15,7 +15,7 @@
 #include <sys/msg.h>
 
 #define MAX 256
-//#define DEBUG   //remove this line to remove debug messages
+#define DEBUG   //remove this line to remove debug messages
 #define PIPE_NAME   "input_pipe"
 
 typedef struct{
@@ -100,6 +100,9 @@ void sigusr1 (int signum);
 //void fixInput(char *string);
 
 //Global Variables
-FILE *f;
-int mqid;
-pid_t pid;
+FILE *f;              //log file
+pid_t pid;            //distinct father from child process
+int mqid;             //id of message queue
+int semid;            //id of semaphore
+int shmid;            //id of shared memory
+SharedMemory *mem;    //pointer to the shared memory

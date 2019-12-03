@@ -10,7 +10,7 @@
 
 
 #define PIPE_NAME   "input_pipe"
-#define DEBUG
+//#define DEBUG
 #define MAX 256
 
 int main(int argc, char *argv[]) {
@@ -41,7 +41,6 @@ int main(int argc, char *argv[]) {
     #endif
     strcpy(buff,argv[i]);
     write(fd,buff,sizeof(buff));
-    //usleep(100);      //should be semaphore
   }
 
   usleep(100);
