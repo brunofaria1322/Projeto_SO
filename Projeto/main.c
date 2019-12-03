@@ -101,7 +101,7 @@ int main(int argc, char *argv[]){
 	//main
 	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
 
-	pid = fork();
+	pid_t pid = fork();
 	if (pid == 0){
 		tower();
 		exit(0);
@@ -110,46 +110,40 @@ int main(int argc, char *argv[]){
 		perror("the creation of a child process was unsuccessful.");
 		exit(0);
 	}
-	else{
-		int total,n;
+	int total,n;
 
-		while (1){
+	while (1){
 
-			if ((fd = open(PIPE_NAME,  O_RDWR)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
+		if ((fd = open(PIPE_NAME,  O_RDWR)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
 
-				//ler do client
-				read(fd,&num,sizeof(num));
+			//ler do client
+			read(fd,&num,sizeof(num));
 
 
-			  for (i=0;i<num;i++){
-					n=total=0;
-					while (total < MAX) {
-						n =  read(fd, (char*)buff + total,sizeof(buff)-total);
-						total+= n;
-					}
-					strcpy(args[i],buff);
-			  }
+		  for (i=0;i<num;i++){
+				n=total=0;
+				while (total < MAX) {
+					n =  read(fd, (char*)buff + total,sizeof(buff)-total);
+					total+= n;
+				}
+				strcpy(args[i],buff);
+		  }
 
-				close(fd);
+			close(fd);
 
-				//recebe bem
-				#ifdef DEBUG
-					printf ("Recieved %d args\n",num);
-					for (i=0;i<num;i++){
-						printf ("Arg[%d] - %s\n",i,args[i]);
-					}
-				#endif
+			//recebe bem
+			#ifdef DEBUG
+				printf ("Recieved %d args\n",num);
+				for (i=0;i<num;i++){
+					printf ("Arg[%d] - %s\n",i,args[i]);
+				}
+			#endif
 
-				inf->head=verify(num, args, inf->head);
-				#ifdef DEBUG
-					if (inf->head) printf ("head->init: %d\ni",inf->head->init);
-				#endif
-			}
-
+			inf->head=verify(num, args, inf->head);
+			#ifdef DEBUG
+				if (inf->head) printf ("head->init: %d\ni",inf->head->init);
+			#endif
 		}
-
-
-		//Terminating ad Closing everything
 	}
 }
 
@@ -159,9 +153,10 @@ int main(int argc, char *argv[]){
 	}
 	*/
 
-	//Exit signal
+//Exit signal
 void sigint (int signum){
-	if(pid!=0){
+	//Terminating ad Closing everything
+	if(getpid()!=0){
 		wait(NULL);
 		writeLog(f,"Program finished running.");
 		unlink(PIPE_NAME);

@@ -102,4 +102,3 @@ void sigusr1 (int signum);
 //Global Variables
 FILE *f;
 int mqid;
-pid_t pid;
