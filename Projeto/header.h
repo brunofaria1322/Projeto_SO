@@ -15,7 +15,7 @@
 #include <sys/msg.h>
 
 #define MAX 256
-#define DEBUG   //remove this line to remove debug messages
+//#define DEBUG   //remove this line to remove debug messages
 #define PIPE_NAME   "input_pipe"
 
 typedef struct{
@@ -95,9 +95,11 @@ commands * verify (int argc, char argv[][MAX], commands * head);
 
 void *fDepart(Departure * departure);
 void *fArrival(Arrival * arrival);
+void sigint(int signum);
+void sigusr1 (int signum);
 //void fixInput(char *string);
 
 //Global Variables
 FILE *f;
-int running;
 int mqid;
+pid_t pid;
