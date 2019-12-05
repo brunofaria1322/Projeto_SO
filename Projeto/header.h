@@ -5,6 +5,7 @@
 #include <sys/wait.h>
 #include <sys/stat.h>
 #include <sys/types.h>
+#include <sys/ipc.h>
 #include <sys/shm.h>
 #include <sys/sem.h>
 #include <semaphore.h>
@@ -79,7 +80,7 @@ typedef struct{
   int hm_emergency;         //Average number of holding maneuvers per emergency flight
   int flights_redirected;   //Number of flights redirected to another airport
   int flights_rejected;     //Flights rejected by the Control Tower
-  char* slots[16];	    //Instructions for each flight 
+  char* slots[16];	        //Instructions for each flight
 
 }SharedMemory;
 
@@ -103,17 +104,18 @@ commands * verify (int argc, char argv[][MAX], commands * head);
 void *fDepart(Departure * departure);
 void *fArrival(Arrival * arrival);
 void sigint(int signum);
-void sigusr1 (int signum);
+void showStats (int signum);
 //void fixInput(char *string);
 
 //Global Variables
 FILE *f;              //log file
 int t;                //time
-int maxA;	      //max active Arrivals allowed
-int maxD;	      //max active Departure allowed
+int maxA;	            //max active Arrivals allowed
+int maxD;	            //max active Departure allowed
 pid_t pid;            //distinct father from child process
 int mqid;             //id of message queue
 int queue_size;       //number of active threads
 int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
+pthread_mutex_t shm;  //mutex for access to shared memoru

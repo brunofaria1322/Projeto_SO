@@ -5,6 +5,7 @@ int main(int argc, char *argv[]){
 	//Initializing
 
 	//Variables
+	pthread_mutex_init(&shm,NULL);
 	int fd,i,num;
 	char buff[MAX];
 	char args[32][MAX];
@@ -41,26 +42,26 @@ int main(int argc, char *argv[]){
 	}
 
 	mem = (SharedMemory*) shmat(shmid, NULL, 0);
-	
+
 	writeLog(f, "Program started running.");
 	Data data;
 	data=readConfig(data);
-	
+
 	#ifdef DEBUG
 	printData(data);
 	#endif
 	maxD = data.D;
-	maxA = data.A;	
+	maxA = data.A;
 
-	mem->flights_created = 0;      
-  	mem->flights_landed = 0;       
-  	mem->time2land = 0;           
-  	mem->flights_takingoff=0;    
-  	mem->time2takeoff = 0;         
-  	mem->hm = 0;                   
-  	mem->hm_emergency = 0;         
-  	mem->flights_redirected = 0;   
-  	mem->flights_rejected = 0;     
+	mem->flights_created = 0;
+	mem->flights_landed = 0;
+	mem->time2land = 0;
+	mem->flights_takingoff=0;
+	mem->time2takeoff = 0;
+	mem->hm = 0;
+	mem->hm_emergency = 0;
+	mem->flights_redirected = 0;
+	mem->flights_rejected = 0;
 
 	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
@@ -106,7 +107,7 @@ int main(int argc, char *argv[]){
 
 	//Signals
 	signal (SIGINT,sigint);
-	signal (SIGUSR1,sigusr1);
+	signal (SIGUSR1,showStats);
 
 	//main
 	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
@@ -169,11 +170,12 @@ void sigint (int signum){
 	if(pid!=0){
 		wait(NULL);												//wait for child to terminate
 		writeLog(f,"Program finished running.");
-		sem_close(semid);									//closes semaphore
 		unlink(PIPE_NAME);								//unlink linked pipe
 		fclose(f);												//close log file
-		shmctl(shmid, IPC_RMID, NULL);		//closes shared memory
-		msgctl(mqid, IPC_RMID, NULL);			//closes message queue
+		semctl(semid, 0, IPC_RMID);				//releases semaphore
+		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
+		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
+		pthread_mutex_destroy(&shm);			//releases mutex
 		exit(0);
 	}
 	else{
@@ -182,8 +184,12 @@ void sigint (int signum){
 	}
 }
 
-void sigusr1 (int signum){
-	//mostrar estatistcas
+void showStats (int signum){
+	pthread_mutex_lock(&shm);
+
+	printf("Total number of flights created: %d\nTotal number of flights that landed: %d\nAverage wait time (beyond ETA) to land: %d\nTotal number of flights that took off: %d\nAverage wait time to take off: %d\nAverage number of holding maneuvers per landing flight: %d\nAverage number of holding maneuvers per emergency flight: %d\nNumber of flights redirected to another airport: %d\nFlights rejected by the Control Tower: %d\n",mem->flights_created,mem->flights_landed,mem->time2land,mem->flights_takingoff,mem->time2takeoff,mem->hm,mem->hm_emergency,mem->flights_redirected,mem->flights_rejected);
+
+	pthread_mutex_unlock(&shm);
 }
 
 void printData(Data data){
@@ -309,6 +315,7 @@ void *fDepart(Departure * departure){
 	Msg_deparr msgd;
 	msgd.mtype = queue_size;
 	msgd.dep=*(departure);
+	msgd.arr = NULL;
 	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
 	int slot;
 	//Continue
@@ -318,12 +325,12 @@ void *fDepart(Departure * departure){
 	msgrcv(mqid, &slot, sizeof(int), 0, 0);
 	while(1){
 		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
-			queue_size--;			
+			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
 		}
 	}
-	
+
 }
 
 void *fArrival(Arrival * arrival){
@@ -337,6 +344,7 @@ void *fArrival(Arrival * arrival){
 	Msg_deparr msgd;
 	msgd.mtype = queue_size;
 	msgd.arr=*(arrival);
+	msgd.dep = NULL;
 	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
 	//continue
 	#ifdef DEBUG
@@ -346,7 +354,7 @@ void *fArrival(Arrival * arrival){
 	msgrcv(mqid, &slot, sizeof(int), queue_size, 0);
 	while(1){
 		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
-			queue_size--;			
+			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
 		}

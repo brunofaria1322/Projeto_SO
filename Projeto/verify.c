@@ -11,8 +11,8 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 						writeLog(f,wcom);
-					} 
-					else{					
+					}
+					else{
 						char * com = command(7, argv);
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
 						strcpy(wcom,"New command => "); strcat(wcom,com);
@@ -40,9 +40,9 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 					}
 				}
 				else{
-					
+
 						printf("Error: 'initial time' and 'takeoff time' must be floats- DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}");
-					
+
 
 					char * com = command(7, argv);
 					char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
@@ -51,9 +51,9 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 				}
 			}
 			else{
-				
+
 					printf("Invalid number of arguments (%d). Command takes 6 arguments - DEPARTURE {flight_code} init: {initial time} takeoff: {takeoff time}",argc);
-				
+
 				char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 				strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 				writeLog(f,wcom);
@@ -63,7 +63,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 			char * com = command(argc, argv);
 			if(argc == 9){
 				if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"eta:")==0 && atoi(argv[6]) != 0 && strcmp(argv[7],"fuel:") ==0 && atoi(argv[8]) != 0){
-					if (atoi(argv[4])){
+					if (atoi(argv[4])<t){
 						printf("Error: Inserted init time is invalid.");
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
@@ -98,9 +98,9 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 				}
 
 				else{
-					
+
 						printf("Error: 'initial time', 'time to runway' and 'initial fuel' must be floats - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}");
-					
+
 
 					char * com = command(9, argv);
 					char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
@@ -109,18 +109,18 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 				}
 			}
 			else{
-			
+
 				printf("Invalid number of arguments (%d). Command takes 8 arguments - ARRIVAL {flight_code} init: {initial time} eta: {time to runway} fuel: {initial fuel}",argc);
-			
+
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 			strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 			writeLog(f,wcom);
 			}
 		}
 		else{
-			
+
 				printf("Unknown command (%s). Available commands are DEPARTURE and ARRIVAL.",argv[1]);
-			
+
 			char * com = command(argc, argv);
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 			strcpy(wcom,"Wrong command => "); strcat(wcom,com);
