@@ -57,7 +57,7 @@ void tower(){
 	while(1){
 		msgrcv(mqid, &msgd, sizeof(msgd)-sizeof(long), 0, 0);
 		fflush(stdout);
-		if (msgd.arr ==NULL){
+		if (strcmp(msgd.dep.code,"\0")!=0){
 				printf("[Control Tower] Flight %s with planned takeoff at %f\n",msgd.dep.code,msgd.dep.takeoff);
 				D++;
 				pthread_mutex_lock(&shm);

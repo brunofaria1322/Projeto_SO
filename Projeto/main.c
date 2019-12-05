@@ -315,7 +315,6 @@ void *fDepart(Departure * departure){
 	Msg_deparr msgd;
 	msgd.mtype = queue_size;
 	msgd.dep=*(departure);
-	msgd.arr = NULL;
 	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
 	int slot;
 	//Continue
@@ -344,7 +343,6 @@ void *fArrival(Arrival * arrival){
 	Msg_deparr msgd;
 	msgd.mtype = queue_size;
 	msgd.arr=*(arrival);
-	msgd.dep = NULL;
 	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
 	//continue
 	#ifdef DEBUG
@@ -353,7 +351,7 @@ void *fArrival(Arrival * arrival){
 	int slot;
 	msgrcv(mqid, &slot, sizeof(int), queue_size, 0);
 	while(1){
-		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
+		if(strcmp(*(mem->slots[slot]),BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
