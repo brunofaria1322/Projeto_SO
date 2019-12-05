@@ -9,8 +9,7 @@ int main(int argc, char *argv[]){
 	char buff[MAX];
 	char args[32][MAX];
 	pthread_t timer;
-
-
+	queue_size = 0;
 	#ifdef DEBUG
 		printf("Opening file log.txt\n");
 	#endif
@@ -42,14 +41,26 @@ int main(int argc, char *argv[]){
 	}
 
 	mem = (SharedMemory*) shmat(shmid, NULL, 0);
-
+	
 	writeLog(f, "Program started running.");
 	Data data;
 	data=readConfig(data);
-
+	
 	#ifdef DEBUG
 	printData(data);
 	#endif
+	maxD = data.D;
+	maxA = data.A;	
+
+	mem->flights_created = 0;      
+  	mem->flights_landed = 0;       
+  	mem->time2land = 0;           
+  	mem->flights_takingoff=0;    
+  	mem->time2takeoff = 0;         
+  	mem->hm = 0;                   
+  	mem->hm_emergency = 0;         
+  	mem->flights_redirected = 0;   
+  	mem->flights_rejected = 0;     
 
 	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
@@ -186,7 +197,7 @@ void ftimer(info * inf){
 		printf("UT %d\n",inf->ut);
 	#endif
 
-	int t=0, ti=1000*inf->ut;
+	t=0; int ti=1000*inf->ut;
 	while (1){
 		if(t%30==0){
 			printf("Time: %d\n",t);
@@ -288,42 +299,63 @@ commands* addCommand(commands * node, commands * head){
 }
 
 void *fDepart(Departure * departure){
+	queue_size++;
 	#ifdef DEBUG
 		printf("Thread na Departur\n");
 	#endif
 	char buf[MAX];
 	sprintf(buf,"New departure %s on Thread %d",departure->code,(int ) pthread_self());
 	writeLog(f,buf);
-
 	Msg_deparr msgd;
-	msgd.mtype = 1;
-	msgd.dep=departure;
-	msgd.arr=NULL;
-	msgsnd(mqid, &msgd , sizeof(Msg_deparr), 0);
-
+	msgd.mtype = queue_size;
+	msgd.dep=*(departure);
+	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
+	int slot;
 	//Continue
 	#ifdef DEBUG
 		printf("saida da Thread na Departur\n");
 	#endif
-	pthread_exit(NULL);
-	return NULL;
+	msgrcv(mqid, &slot, sizeof(int), 0, 0);
+	while(1){
+		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
+			queue_size--;			
+			pthread_exit(NULL);
+			return NULL;
+		}
+	}
+	
 }
 
 void *fArrival(Arrival * arrival){
+	queue_size++;
 	#ifdef DEBUG
 		printf("Thread na Arrival\n");
 	#endif
 	char buf[MAX];
 	sprintf(buf,"New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
 	writeLog(f,buf);
-
+	Msg_deparr msgd;
+	msgd.mtype = queue_size;
+	msgd.arr=*(arrival);
+	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
 	//continue
 	#ifdef DEBUG
 		printf("saida da Thread na Arrival\n");
 	#endif
+	int slot;
+	msgrcv(mqid, &slot, sizeof(int), queue_size, 0);
+	while(1){
+		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
+			queue_size--;			
+			pthread_exit(NULL);
+			return NULL;
+		}
+	}
+	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
 }
+
 
 
 char* command(int argc, char argv[][MAX]){

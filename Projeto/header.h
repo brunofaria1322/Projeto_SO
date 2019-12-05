@@ -15,8 +15,10 @@
 #include <sys/msg.h>
 
 #define MAX 256
-#define DEBUG   //remove this line to remove debug messages
+//#define DEBUG   //remove this line to remove debug messages
 #define PIPE_NAME   "input_pipe"
+#define NO_INST "no_inst"
+#define BYEBYE "byebye"
 
 typedef struct{
   int ut;   //Unity of Time (milisseconds)
@@ -32,22 +34,32 @@ typedef struct{
 
 
 typedef struct{
-	char* code;
+	char code[8];
 	float init;
 	float takeoff;
 }Departure;
 
+typedef struct Dep_q{
+	Departure* dep;
+	struct Dep_q* next;
+}Dep_q;
+
 typedef struct{
-	char* code;
+	char code[8];
 	float init;
 	float eta;
 	float fuel;
 }Arrival;
 
+typedef struct Arr_q{
+	Arrival* arr;
+	struct Arr_q* next;
+}Arr_q;
+
 typedef struct{
 	long mtype;
-	Departure* dep;
-	Arrival* arr;
+	Departure dep;
+	Arrival arr;
 }Msg_deparr;
 
 typedef struct commands{
@@ -61,18 +73,13 @@ typedef struct{
   int flights_created;      //Total number of flights created
   int flights_landed;       //Total number of flights that landed
   int time2land;            //Average wait time (beyond ETA) to land
-  int flights_takingoff;    //Total number of flights taking off
+  int flights_takingoff;    //Total number of flights that took off
   int time2takeoff;         //Average wait time to take off
   int hm;                   //Average number of holding maneuvers per landing flight
   int hm_emergency;         //Average number of holding maneuvers per emergency flight
   int flights_redirected;   //Number of flights redirected to another airport
   int flights_rejected;     //Flights rejected by the Control Tower
-
-  //extras
-  char *id;                 //id of flight
-  int fuel;                 //fuel of flight
-  int eta;                  //estimated time of arrival
-  int etd;                  //estimated time to depart
+  char* slots[16];	    //Instructions for each flight 
 
 }SharedMemory;
 
@@ -101,8 +108,12 @@ void sigusr1 (int signum);
 
 //Global Variables
 FILE *f;              //log file
+int t;                //time
+int maxA;	      //max active Arrivals allowed
+int maxD;	      //max active Departure allowed
 pid_t pid;            //distinct father from child process
 int mqid;             //id of message queue
+int queue_size;       //number of active threads
 int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
