@@ -9,26 +9,27 @@ void printdep(Dep_q* depq){
 	}
 	free(copy);
 }
-Dep_q* addDeparture(Departure * node, Dep_q * head){
+Dep_q* addDeparture(Dep_q * node, Dep_q * head){
 	Dep_q *tmp, *ant;
-  if (head->dep==NULL){
+  if (head==NULL){
 	printf("1\n");
-	head->dep=node;
+	head=node;
 }
   else{
-      if (head->dep->takeoff>node->takeoff) {
-	printf("2\n");
-	  head->next = head;
-          head->dep=node;
+      if (head->dep->takeoff>node.dep->takeoff) {
+					printf("2\n");
+	  			node->next = head;
+          head=node;
       }
       else {
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && (tmp->dep->takeoff<node->takeoff)) {
+          while ((tmp!=NULL) && (tmp->dep->takeoff<node->dep->takeoff)) {
               ant=tmp;
               tmp=tmp->next;
           }
-          ant->next->dep=node;
+        	node->next=tmp;
+          ant->next=node;
       }
 		}
   return(head);
@@ -36,9 +37,9 @@ Dep_q* addDeparture(Departure * node, Dep_q * head){
 
 int insert_slot(char* slots[16], char* inst){
 	int i;
-	for(i=1;i<maxA+maxD+1;i++){
-		if(*(slots+i)==NULL){
-			*(slots+i)=inst;
+	for(i=0;i<maxA+maxD;i++){
+		if(slots[i]==NULL){
+			slots[i]=inst;
 			return i;
 		}
 	}
@@ -52,9 +53,8 @@ void tower(){
 	Msg_deparr msgd;
 	Msg_slot msgs;
 	Dep_q* dep_q = (Dep_q*)malloc(sizeof(Dep_q));
-	dep_q->dep = NULL; dep_q->next = NULL;
+	dep_q = NULL;
 	//Arr_q* arr_q = (Arr_q*)malloc(sizeof(Arr_q));
-	Departure* dep = (Departure*)malloc(sizeof(Departure));
 	while(1){
 		msgrcv(mqid, &msgd, sizeof(msgd)-sizeof(long), 1, 0);
 		fflush(stdout);
@@ -64,11 +64,12 @@ void tower(){
 				pthread_mutex_lock(&shm);
 				mem->flights_created++;
 				msgs.slot = insert_slot(mem->slots,NO_INST);
-				msgs.mtype = 1;
 				pthread_mutex_unlock(&shm);
+				msgs.mtype = 1;
 				msgsnd(mqid, &msgs, sizeof(msgs), 0);
-				strcpy(dep->code,msgd.dep.code);
-				dep->takeoff = msgd.dep.takeoff;
+				Dep_q* dep = (Dep_q*)malloc(sizeof(Dep_q));
+				strcpy(dep->dep->code,msgd.dep.code);
+				dep->dep->takeoff = msgd.dep.takeoff;
 				addDeparture(dep,dep_q);
 				printdep(dep_q);
 			if (D>maxD){

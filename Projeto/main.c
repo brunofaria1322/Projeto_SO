@@ -333,7 +333,6 @@ void *fDepart(Departure * departure){
 			return NULL;
 		}
 	}
-
 }
 
 void *fArrival(Arrival * arrival){
