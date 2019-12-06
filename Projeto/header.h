@@ -17,9 +17,12 @@
 
 #define MAX 256
 //#define DEBUG   //remove this line to remove debug messages
+#define SEMLOG "SemLog"
+#define SEMSHM "SemShM"
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
 #define BYEBYE "byebye"
+
 
 typedef struct{
   int ut;   //Unity of Time (milisseconds)
@@ -50,6 +53,7 @@ typedef struct{
 	float init;
 	float eta;
 	float fuel;
+  int emer;
 }Arrival;
 
 typedef struct Arr_q{
@@ -117,12 +121,16 @@ FILE *f;              //log file
 int t;                //time
 int maxA;	            //max active Arrivals allowed
 int maxD;	            //max active Departure allowed
+int tLand;            //time for Landing
+int tTkof;            //time to takeoff;
 pid_t pid;            //distinct father from child process
 int mqid;             //id of message queue
 int queue_size;       //number of active threads
 int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
-pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
+//pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t log_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
+sem_t *semLog, *semShM;
+                    //, *semMQ, *semArrival, *semDepart;

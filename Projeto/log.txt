@@ -120,3 +120,162 @@
 02:22:40 New departure TP74 on Thread 1582184192
 02:22:45 New departure TP75 on Thread 1573791488
 02:22:48 Program finished running.
+05:17:53 Program started running.
+05:17:53 Program started running.
+05:17:55 Program finished running.
+05:18:58 Program started running.
+05:18:58 Program started running.
+05:19:01 Program finished running.
+05:21:52 Program started running.
+05:21:58 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:21:59 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:01 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:10 Wrong command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:22:12 New Arrival TP01 on Thread -1719818496
+05:22:12 New Arrival TP02 on Thread -1811941632
+05:22:12 New Arrival TP02 on Thread -1728211200
+05:22:28 Program finished running.
+05:22:32 Program started running.
+05:22:39 New command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:22:41 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:43 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:22:47 New Arrival TP03 on Thread -1783503104
+05:22:52 New Arrival TP01 on Thread -1791895808
+05:22:52 New Arrival TP02 on Thread -1800288512
+05:23:24 Program finished running.
+05:32:42 Program started running.
+05:32:46 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:32:47 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:32:49 New command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:32:58 New Arrival TP03 on Thread 1901700864
+05:33:03 New Arrival TP01 on Thread 1893308160
+05:33:03 New Arrival TP02 on Thread 1811937024
+05:34:01 Program finished running.
+05:56:23 Program started running.
+05:56:23 Program started running.
+05:56:28 Program finished running.
+05:57:49 Program started running.
+05:57:49 Program started running.
+05:57:59 Program finished running.
+11:40:37 Program started running.
+11:40:37 Program started running.
+11:40:49 Program finished running.
+11:45:30 Program started running.
+11:45:30 Program started running.
+11:45:48 Program finished running.
+11:46:17 Program started running.
+11:46:17 Program started running.
+11:46:23 Program finished running.
+11:47:10 Program started running.
+11:47:10 Program started running.
+11:47:21 Program finished running.
+11:47:50 Program started running.
+11:47:50 Program started running.
+11:48:01 Program finished running.
+11:48:05 Program started running.
+11:48:05 Program started running.
+11:48:08 Program finished running.
+11:49:16 Program started running.
+11:49:16 Program started running.
+11:49:17 New command => DEPARTURE TP73 init: 10 takeoff: 50 
+11:49:17 New command => DEPARTURE TP74 init: 20 takeoff: 40 
+11:49:17 New command => DEPARTURE TP73 init: 30 takeoff: 60 
+11:49:21 New departure TP73 on Thread 735348480
+11:49:26 New departure TP74 on Thread 726955776
+11:49:31 New departure TP73 on Thread 716367616
+11:49:50 Program finished running.
+11:51:14 Program started running.
+11:51:15 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+11:51:15 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+11:51:15 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+11:51:15 New command => ARRIVAL TP80 init: 40 eta: 200 fuel: 1500 
+11:51:15 New command => ARRIVAL TP81 init: 50 eta: 200 fuel: 1500 
+11:51:15 New command => ARRIVAL TP82 init: 60 eta: 200 fuel: 1500 
+11:51:19 New departure TP70 on Thread 1670231808
+11:51:24 New departure TP71 on Thread 1659643648
+11:51:29 New departure TP72 on Thread 1651250944
+11:51:34 New Arrival TP80 on Thread 1642858240
+11:51:39 New Arrival TP81 on Thread 1634465536
+11:51:44 New Arrival TP82 on Thread 1626072832
+11:52:21 Program finished running.
+11:54:00 Program started running.
+11:54:01 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+11:54:01 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+11:54:01 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+11:54:01 New command => ARRIVAL TP80 init: 40 eta: 200 fuel: 1500 
+11:54:01 New command => ARRIVAL TP81 init: 50 eta: 200 fuel: 1500 
+11:54:01 New command => ARRIVAL TP82 init: 60 eta: 200 fuel: 1500 
+11:54:05 New departure TP70 on Thread -207665408
+11:54:10 New departure TP71 on Thread -218253568
+11:54:15 New departure TP72 on Thread -226646272
+11:54:20 New Arrival TP80 on Thread -235038976
+11:54:25 New Arrival TP81 on Thread -243431680
+11:54:30 New Arrival TP82 on Thread -251824384
+11:54:51 Program finished running.
+14:15:18 Program started running.
+14:15:19 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+14:15:19 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+14:15:19 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+14:15:19 New command => ARRIVAL TP80 init: 40 eta: 200 fuel: 1500 
+14:15:19 New command => ARRIVAL TP81 init: 50 eta: 200 fuel: 1500 
+14:15:19 New command => ARRIVAL TP82 init: 60 eta: 200 fuel: 1500 
+14:15:23 New departure TP70 on Thread 1607378688
+14:15:28 New departure TP71 on Thread 1598985984
+14:15:33 New departure TP72 on Thread 1588397824
+14:15:38 New Arrival TP80 on Thread 1580005120
+14:15:43 New Arrival TP81 on Thread 1571612416
+14:15:48 New Arrival TP82 on Thread 1563219712
+14:15:56 Program finished running.
+14:51:25 Program started running.
+14:51:26 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+14:51:26 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+14:51:26 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+14:51:26 New command => ARRIVAL TP80 init: 40 eta: 200 fuel: 1500 
+14:51:26 New command => ARRIVAL TP81 init: 50 eta: 200 fuel: 1500 
+14:51:26 New command => ARRIVAL TP82 init: 60 eta: 200 fuel: 1500 
+14:51:30 New departure TP70 on Thread 58197760
+14:51:35 New departure TP71 on Thread 47609600
+14:51:40 New departure TP72 on Thread 39216896
+14:51:45 New Arrival TP80 on Thread 30824192
+14:51:50 New Arrival TP81 on Thread 22431488
+14:51:55 New Arrival TP82 on Thread 14038784
+14:51:58 Program finished running.
+15:05:56 Program started running.
+15:05:56 Program started running.
+15:05:57 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+15:05:57 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+15:05:57 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+15:05:57 New command => ARRIVAL TP80 init: 40 eta: 100 fuel: 1500 
+15:05:57 New command => ARRIVAL TP81 init: 50 eta: 120 fuel: 1500 
+15:05:57 New command => ARRIVAL TP82 init: 60 eta: 140 fuel: 1500 
+15:06:01 New departure TP70 on Thread 1234671360
+15:06:02 Program finished running.
+15:06:19 Program started running.
+15:06:20 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+15:06:20 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+15:06:20 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+15:06:20 New command => ARRIVAL TP80 init: 40 eta: 100 fuel: 1500 
+15:06:20 New command => ARRIVAL TP81 init: 50 eta: 120 fuel: 1500 
+15:06:20 New command => ARRIVAL TP82 init: 60 eta: 140 fuel: 1500 
+15:06:24 New departure TP70 on Thread 989329152
+15:06:29 New departure TP71 on Thread 978740992
+15:06:34 New departure TP72 on Thread 970348288
+15:06:39 New Arrival TP80 on Thread 961955584
+15:06:44 New Arrival TP81 on Thread 953562880
+15:06:49 New Arrival TP82 on Thread 872412928
+15:06:58 Program finished running.
+18:55:37 Program started running.
+18:55:37 Program started running.
+18:55:38 New command => DEPARTURE TP70 init: 10 takeoff: 50 
+18:55:38 New command => DEPARTURE TP71 init: 20 takeoff: 40 
+18:55:38 New command => DEPARTURE TP72 init: 30 takeoff: 60 
+18:55:38 New command => ARRIVAL TP80 init: 40 eta: 100 fuel: 1500 
+18:55:38 New command => ARRIVAL TP81 init: 50 eta: 120 fuel: 1500 
+18:55:38 New command => ARRIVAL TP82 init: 60 eta: 140 fuel: 1500 
+18:55:42 New departure TP70 on Thread 684910336
+18:55:47 New departure TP71 on Thread 603977472
+18:55:52 New departure TP72 on Thread 595584768
+18:55:57 New Arrival TP80 on Thread 587192064
+18:56:02 New Arrival TP81 on Thread 578799360
+18:56:07 New Arrival TP82 on Thread 570406656
+18:56:14 Program finished running.

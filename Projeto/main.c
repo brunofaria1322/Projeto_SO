@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
 	//Initializing
 
 	//Variables
-	pthread_mutex_init(&shm_mutex,NULL);
+
 	int fd,i,num;
 	char buff[MAX];
 	char args[32][MAX];
@@ -43,7 +43,6 @@ int main(int argc, char *argv[]){
 
 	mem = (SharedMemory*) shmat(shmid, NULL, 0);
 
-	writeLog(f, "Program started running.");
 	Data data;
 	data=readConfig(data);
 
@@ -52,6 +51,8 @@ int main(int argc, char *argv[]){
 	#endif
 	maxD = data.D;
 	maxA = data.A;
+	tLand = data.L;
+	tTkof = data.T;
 
 	mem->flights_created = 0;
 	mem->flights_landed = 0;
@@ -71,15 +72,22 @@ int main(int argc, char *argv[]){
 	inf->ut=data.ut;
 	inf->head=head;
 
-	// Create an array of 2 semaphores
-	#ifdef DEBUG
-	printf("Creating an array of 2 semaphores\n");
-	#endif
+	//create semaphores
+  sem_unlink(SEMLOG);
+  sem_unlink(SEMSHM);
 
-	if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0600)) == -1 ){
-    perror("Could not get the semaphore set!");
-    exit(0);
-  }
+  semLog = sem_open(SEMLOG, O_CREAT|O_EXCL, 0600, 1);
+  semShM = sem_open(SEMSHM, O_CREAT|O_EXCL, 0600, 1);
+
+	// // Create an array of 2 semaphores
+	// #ifdef DEBUG
+	// printf("Creating an array of 2 semaphores\n");
+	// #endif
+	//
+	// if ( (semid=semget(IPC_PRIVATE, 2, IPC_CREAT|0600)) == -1 ){
+  //   perror("Could not get the semaphore set!");
+  //   exit(0);
+  // }
 
 
 	// Create the message queue
@@ -110,6 +118,7 @@ int main(int argc, char *argv[]){
 	signal (SIGUSR1,showStats);
 
 	//main
+	writeLog(f, "Program started running.");
 	pthread_create (&timer, NULL,(void *)ftimer,(void *) inf);
 
 	pid = fork();
@@ -172,10 +181,13 @@ void sigint (int signum){
 		writeLog(f,"Program finished running.");
 		unlink(PIPE_NAME);								//unlink linked pipe
 		fclose(f);												//close log file
-		semctl(semid, 0, IPC_RMID);				//releases semaphore
+		sem_close(semLog);									//closes log semaphore
+		sem_close(semShM);									//closes SharedMemory semaphore
+		unlink(SEMLOG);										//unlink Log semaphore
+		unlink(SEMSHM);										//unlink SharedMemory semaphore
+		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
-		pthread_mutex_destroy(&shm_mutex);			//releases mutex
 		exit(0);
 	}
 	else{
@@ -185,11 +197,11 @@ void sigint (int signum){
 }
 
 void showStats (int signum){
-	pthread_mutex_lock(&shm_mutex);
+	sem_wait(semShM);
 
 	printf("Total number of flights created: %d\nTotal number of flights that landed: %d\nAverage wait time (beyond ETA) to land: %d\nTotal number of flights that took off: %d\nAverage wait time to take off: %d\nAverage number of holding maneuvers per landing flight: %d\nAverage number of holding maneuvers per emergency flight: %d\nNumber of flights redirected to another airport: %d\nFlights rejected by the Control Tower: %d\n",mem->flights_created,mem->flights_landed,mem->time2land,mem->flights_takingoff,mem->time2takeoff,mem->hm,mem->hm_emergency,mem->flights_redirected,mem->flights_rejected);
 
-	pthread_mutex_unlock(&shm_mutex);
+	sem_post(semShM);
 }
 
 void printData(Data data){
@@ -348,13 +360,18 @@ void *fArrival(Arrival * arrival){
 	Msg_slot msgs;
 	msgd.mtype = 2;
 	msgd.arr=*(arrival);
-	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
+	if (msgd.arr.fuel<msgd.arr.eta+tLand+4){
+		msgd.arr.emer = 1;
+	}
+	else{msgd.arr.emer = 0;}
+	msgsnd(mqid, &msgd , sizeof(msgd), 0);
 	//continue
 	#ifdef DEBUG
 		printf("saida da Thread na Arrival\n");
 	#endif
 	//int slot;
-	msgrcv(mqid, &msgs, sizeof(msgs)-sizeof(long), 3, 0);
+	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
+	printf("slot = %d",msgs.slot);
 	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
