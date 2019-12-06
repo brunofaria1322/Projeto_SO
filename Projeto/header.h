@@ -63,6 +63,11 @@ typedef struct{
 	Arrival arr;
 }Msg_deparr;
 
+typedef struct{
+  long mtype;
+  int slot;
+}Msg_slot;
+
 typedef struct commands{
   Departure * dep;
   Arrival * arr;

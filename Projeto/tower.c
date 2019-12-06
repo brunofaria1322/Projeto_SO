@@ -50,21 +50,23 @@ void tower(){
 		printf("Control Tower created.\n");
 	#endif
 	Msg_deparr msgd;
+	Msg_slot msgs;
 	Dep_q* dep_q = (Dep_q*)malloc(sizeof(Dep_q));
 	dep_q->dep = NULL; dep_q->next = NULL;
 	//Arr_q* arr_q = (Arr_q*)malloc(sizeof(Arr_q));
 	Departure* dep = (Departure*)malloc(sizeof(Departure));
 	while(1){
-		msgrcv(mqid, &msgd, sizeof(msgd)-sizeof(long), 0, 0);
+		msgrcv(mqid, &msgd, sizeof(msgd)-sizeof(long), 1, 0);
 		fflush(stdout);
 		if (strcmp(msgd.dep.code,"\0")!=0){
 				printf("[Control Tower] Flight %s with planned takeoff at %f\n",msgd.dep.code,msgd.dep.takeoff);
 				D++;
 				pthread_mutex_lock(&shm);
 				mem->flights_created++;
-				int slot = insert_slot(mem->slots,NO_INST);
+				msgs.slot = insert_slot(mem->slots,NO_INST);
+				msgs.mtype = 1;
 				pthread_mutex_unlock(&shm);
-				msgsnd(mqid, &slot, sizeof(int), msgd.mtype);
+				msgsnd(mqid, &msgs, sizeof(msgsg), 0);
 				strcpy(dep->code,msgd.dep.code);
 				dep->takeoff = msgd.dep.takeoff;
 				addDeparture(dep,dep_q);

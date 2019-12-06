@@ -313,17 +313,21 @@ void *fDepart(Departure * departure){
 	sprintf(buf,"New departure %s on Thread %d",departure->code,(int ) pthread_self());
 	writeLog(f,buf);
 	Msg_deparr msgd;
+	Msg_slot msgs;
 	msgd.mtype = queue_size;
 	msgd.dep=*(departure);
-	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
-	int slot;
+	msgsnd(mqid, &msgd, 1, 0);
 	//Continue
 	#ifdef DEBUG
 		printf("saida da Thread na Departur\n");
 	#endif
-	msgrcv(mqid, &slot, sizeof(int), 0, 0);
+	msgrcv(mqid, &msgs, sizeof(msgs), 1, 0);
+	printf("slot = %d", msgs.slot);
+	queue_size--;
+	pthread_exit(NULL);
+	return NULL;
 	while(1){
-		if(strcmp(*(mem->slots+slot),BYEBYE)==0){
+		if(strcmp(*(mem->slots+msgs.slot),BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
@@ -350,8 +354,11 @@ void *fArrival(Arrival * arrival){
 	#endif
 	int slot;
 	msgrcv(mqid, &slot, sizeof(int), queue_size, 0);
+	queue_size--;
+	pthread_exit(NULL);
+	return NULL;
 	while(1){
-		if(strcmp(*(mem->slots[slot]),BYEBYE)==0){
+		if(strcmp(*(mem->slots+msgs.slot),BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
