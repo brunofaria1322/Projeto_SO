@@ -14,16 +14,27 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 		head=node;
 	}
   else{
-      if (((head->arr->eta + tLand > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			//if (((head->arr->eta + tLand > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			if ((head->arr->fuel - head->arr->eta +head->arr->init > node->arr->fuel - node->arr->eta+node->arr->init)||(node->arr->emer == 1 && head->arr->emer == 0)) {
 					printf("2\n");
 	  			node->next = head;
           head=node;
       }
+			else if (node->arr->emer == 1 && head->arr->emer == 1){
+				ant=head;
+				tmp=head->next;
+				while ((head!=0) || (head->arr->fuel - head->arr->eta + head->arr->init <= node->arr->fuel - node->arr->eta + node->arr->init)) {
+						ant=tmp;
+						tmp=tmp->next;
+				}
+				node->next=tmp;
+				ant->next=node;
+			}
       else {
 					printf("3\n");
           ant=head;
           tmp=head->next;
-          while (((head->arr->eta + tLand <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
+          while (head->arr->fuel - head->arr->eta + head->arr->init <= node->arr->fuel - node->arr->eta + node->arr->init) {
               ant=tmp;
               tmp=tmp->next;
           }

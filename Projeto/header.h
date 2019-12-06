@@ -16,7 +16,7 @@
 #include <sys/msg.h>
 
 #define MAX 256
-#define DEBUG   //remove this line to remove debug messages
+//#define DEBUG   //remove this line to remove debug messages
 #define SEMLOG "SemLog"
 #define SEMSHM "SemShM"
 #define PIPE_NAME   "input_pipe"
