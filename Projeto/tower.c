@@ -65,12 +65,8 @@ void tower(){
 				mem->flights_created++;
 				msgs.slot = insert_slot(mem->slots,NO_INST);
 				pthread_mutex_unlock(&shm);
-<<<<<<< HEAD
-				msgs.mtype = 1;
-=======
 				msgs.mtype = 3;
 				printf("Torre: slot = %d\n",msgs.slot);
->>>>>>> e3ce719fc5fa1406fa22addd08106f13aa7f1597
 				msgsnd(mqid, &msgs, sizeof(msgs), 0);
 				Dep_q* dep = (Dep_q*)malloc(sizeof(Dep_q));
 				strcpy(dep->dep->code,msgd.dep.code);
