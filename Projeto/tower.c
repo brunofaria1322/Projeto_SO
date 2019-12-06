@@ -66,7 +66,7 @@ void tower(){
 				msgs.slot = insert_slot(mem->slots,NO_INST);
 				msgs.mtype = 1;
 				pthread_mutex_unlock(&shm);
-				msgsnd(mqid, &msgs, sizeof(msgsg), 0);
+				msgsnd(mqid, &msgs, sizeof(msgs), 0);
 				strcpy(dep->code,msgd.dep.code);
 				dep->takeoff = msgd.dep.takeoff;
 				addDeparture(dep,dep_q);
