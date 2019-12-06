@@ -16,10 +16,13 @@
 #include <sys/msg.h>
 
 #define MAX 256
-//#define DEBUG   //remove this line to remove debug messages
+#define DEBUG   //remove this line to remove debug messages
+#define SEMLOG "SemLog"
+#define SEMSHM "SemShM"
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
 #define BYEBYE "byebye"
+
 
 typedef struct{
   int ut;   //Unity of Time (milisseconds)
@@ -126,6 +129,8 @@ int queue_size;       //number of active threads
 int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
-pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
+//pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t log_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
+sem_t *semLog, *semShM;
+                    //, *semMQ, *semArrival, *semDepart;

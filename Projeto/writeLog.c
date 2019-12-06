@@ -12,7 +12,9 @@ void writeLog(FILE *f, char *log){
   struct tm *tmp = gmtime(&t);
   strftime(buff, sizeof(buff), "%X", tmp);
 
+  sem_wait(semLog);
   fprintf(f, "%s %s\n", buff, log);
+  sem_post(semLog);
   printf("\n%s %s\n", buff, log);
 
 }

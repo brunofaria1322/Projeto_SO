@@ -93,10 +93,10 @@ void tower(){
 		if (msgd.mtype == 1){
 				printf("[Control Tower] Flight %s with planned takeoff at %f\n",msgd.dep.code,msgd.dep.takeoff);
 				D++;
-				pthread_mutex_lock(&shm_mutex);
+				sem_wait(semShM);
 				mem->flights_created++;
 				msgs.slot = insert_slot(mem->slots,NO_INST);
-				pthread_mutex_unlock(&shm_mutex);
+				sem_post(semShM);
 				msgs.mtype = 3;
 				msgsnd(mqid, &msgs, sizeof(msgs), 0);
 				Dep_q* dep = (Dep_q*)malloc(sizeof(Dep_q));
@@ -113,10 +113,10 @@ void tower(){
 				}
 				else{sprintf(frej, "[Control Tower] Flight %s was rejected (fuel would not be enough).",msgd.dep.code);}
 				writeLog(f,frej);
-				pthread_mutex_lock(&shm_mutex);
+				sem_wait(semShM);
 				*(mem->slots+(int)msgd.mtype)=BYEBYE;
 				mem->flights_rejected++;
-				pthread_mutex_unlock(&shm_mutex);
+				sem_post(semShM);
 				D--;
 			}
 
@@ -125,10 +125,10 @@ void tower(){
 				printf("[Control Tower] Flight %s with a planned eta of %f. Fuel: %f\n",msgd.arr.code,msgd.arr.eta, msgd.arr.fuel);
 				A++;
 
-				pthread_mutex_lock(&shm_mutex);
+				sem_wait(semShM);
 				mem->flights_created++;
 				msgs.slot = insert_slot(mem->slots,NO_INST);
-				pthread_mutex_unlock(&shm_mutex);
+				sem_post(semShM);
 				msgs.mtype = 3;
 				printf("Torre: slot = %d\n",msgs.slot);
 				msgsnd(mqid, &msgs, sizeof(msgs), 0);
@@ -144,10 +144,10 @@ void tower(){
 				char * frej = malloc(sizeof(char)*128);
 				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Arrivals was reached).",msgd.arr.code);
 				writeLog(f,frej);
-				pthread_mutex_lock(&shm_mutex);
+				sem_wait(semShM);
 				*(mem->slots+(int)msgd.mtype)="byebye";
 				mem->flights_rejected++;
-				pthread_mutex_unlock(&shm_mutex);
+				sem_post(semShM);
 				A--;
 			}
 		}
