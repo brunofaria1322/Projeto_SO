@@ -120,3 +120,40 @@
 02:22:40 New departure TP74 on Thread 1582184192
 02:22:45 New departure TP75 on Thread 1573791488
 02:22:48 Program finished running.
+05:17:53 Program started running.
+05:17:53 Program started running.
+05:17:55 Program finished running.
+05:18:58 Program started running.
+05:18:58 Program started running.
+05:19:01 Program finished running.
+05:21:52 Program started running.
+05:21:58 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:21:59 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:01 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:10 Wrong command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:22:12 New Arrival TP01 on Thread -1719818496
+05:22:12 New Arrival TP02 on Thread -1811941632
+05:22:12 New Arrival TP02 on Thread -1728211200
+05:22:28 Program finished running.
+05:22:32 Program started running.
+05:22:39 New command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:22:41 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:22:43 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:22:47 New Arrival TP03 on Thread -1783503104
+05:22:52 New Arrival TP01 on Thread -1791895808
+05:22:52 New Arrival TP02 on Thread -1800288512
+05:23:24 Program finished running.
+05:32:42 Program started running.
+05:32:46 New command => ARRIVAL TP01 init: 40 eta: 40 fuel: 90 
+05:32:47 New command => ARRIVAL TP02 init: 40 eta: 40 fuel: 100 
+05:32:49 New command => ARRIVAL TP03 init: 30 eta: 50 fuel: 100 
+05:32:58 New Arrival TP03 on Thread 1901700864
+05:33:03 New Arrival TP01 on Thread 1893308160
+05:33:03 New Arrival TP02 on Thread 1811937024
+05:34:01 Program finished running.
+05:56:23 Program started running.
+05:56:23 Program started running.
+05:56:28 Program finished running.
+05:57:49 Program started running.
+05:57:49 Program started running.
+05:57:59 Program finished running.

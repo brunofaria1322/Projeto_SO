@@ -52,6 +52,8 @@ int main(int argc, char *argv[]){
 	#endif
 	maxD = data.D;
 	maxA = data.A;
+	tLand = data.L;
+	tTkof = data.T;
 
 	mem->flights_created = 0;
 	mem->flights_landed = 0;
@@ -348,13 +350,18 @@ void *fArrival(Arrival * arrival){
 	Msg_slot msgs;
 	msgd.mtype = 2;
 	msgd.arr=*(arrival);
-	msgsnd(mqid, &msgd , sizeof(msgd)-sizeof(long), 0);
+	if (msgd.arr.fuel<msgd.arr.eta+tLand+4){
+		msgd.arr.emer = 1;
+	}
+	else{msgd.arr.emer = 0;}
+	msgsnd(mqid, &msgd , sizeof(msgd), 0);
 	//continue
 	#ifdef DEBUG
 		printf("saida da Thread na Arrival\n");
 	#endif
 	//int slot;
-	msgrcv(mqid, &msgs, sizeof(msgs)-sizeof(long), 3, 0);
+	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
+	printf("slot = %d",msgs.slot);
 	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
