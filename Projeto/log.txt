@@ -1,0 +1,122 @@
+01:43:49 Program started running.
+01:43:57 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+01:44:02 New command => ARRIVAL TP437 init: 60 eta: 100 fuel: 100 
+01:44:09 New departure TP73 on Thread -2125879552
+01:44:19 New Arrival TP437 on Thread -2136467712
+01:44:31 Program finished running.
+01:45:03 Program started running.
+01:45:06 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+01:45:09 New command => DEPARTURE TP73 init: 50 takeoff: 190 
+01:45:12 New command => DEPARTURE TP73 init: 60 takeoff: 190 
+01:45:23 New departure TP73 on Thread 1792202496
+01:45:28 New departure TP73 on Thread 1781614336
+01:45:33 New departure TP73 on Thread 1773221632
+01:46:11 Program finished running.
+01:52:44 Program started running.
+01:52:47 New command => DEPARTURE TP73 init: 60 takeoff: 190 
+01:52:48 New command => DEPARTURE TP73 init: 50 takeoff: 190 
+01:52:52 New command => DEPARTURE TP73 init: 50 takeoff: 190 
+01:52:54 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+01:53:04 New departure TP73 on Thread -1842510080
+01:53:09 New departure TP73 on Thread -1853098240
+01:53:09 New departure TP73 on Thread -1861490944
+01:53:14 New departure TP73 on Thread -1869883648
+01:53:24 Program finished running.
+01:53:53 Program started running.
+01:53:55 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+01:53:56 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+01:53:58 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+01:54:01 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+01:54:13 New departure TP73 on Thread -1131030784
+01:54:18 New departure TP74 on Thread -1210157312
+01:54:18 New departure TP74 on Thread -1218550016
+01:54:23 New departure TP75 on Thread -1226942720
+01:54:25 Program finished running.
+01:58:29 Program started running.
+01:58:32 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+01:58:34 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+01:58:37 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+01:58:49 New departure TP73 on Thread 183867136
+01:58:54 New departure TP74 on Thread 173278976
+01:58:59 New departure TP75 on Thread 164886272
+01:59:18 Program finished running.
+02:05:30 Program started running.
+02:05:35 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:05:36 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:05:38 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:05:51 New departure TP73 on Thread -2030762240
+02:05:56 New departure TP74 on Thread -2041350400
+02:06:01 New departure TP75 on Thread -2049743104
+02:06:09 Program finished running.
+02:06:45 Program started running.
+02:06:47 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:06:48 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:06:50 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:07:05 New departure TP73 on Thread -1069955328
+02:07:10 New departure TP74 on Thread -1080543488
+02:07:15 New departure TP75 on Thread -1088936192
+02:07:21 Program finished running.
+02:08:07 Program started running.
+02:08:07 Program started running.
+02:08:09 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:08:10 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:08:12 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:08:27 New departure TP73 on Thread -127539456
+02:08:32 New departure TP74 on Thread -138127616
+02:08:37 New departure TP75 on Thread -146520320
+02:08:41 Program finished running.
+02:11:39 Program started running.
+02:11:42 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:11:43 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:11:45 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:11:59 New departure TP73 on Thread -226023680
+02:12:04 New departure TP74 on Thread -236611840
+02:12:06 Program finished running.
+02:14:20 Program started running.
+02:14:23 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:14:24 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:14:26 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:14:40 New departure TP73 on Thread -2125773056
+02:14:45 New departure TP74 on Thread -2136361216
+02:14:50 New departure TP75 on Thread 2080372480
+02:14:51 Program finished running.
+02:15:47 Program started running.
+02:15:47 Program started running.
+02:15:49 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:15:51 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:15:53 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:16:07 New departure TP73 on Thread -1284106496
+02:16:12 New departure TP74 on Thread -1294694656
+02:16:17 New departure TP75 on Thread -1303087360
+02:16:40 Program finished running.
+02:18:05 Program started running.
+02:18:09 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:18:10 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:18:12 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:18:25 New departure TP73 on Thread -1385261312
+02:18:30 New departure TP74 on Thread -1395849472
+02:18:35 New departure TP75 on Thread -1476397312
+02:18:47 Program finished running.
+02:20:25 Program started running.
+02:20:25 Program started running.
+02:20:27 New command => DEPARTURE TP75 init: 60 takeoff: 190 
+02:20:30 New command => DEPARTURE TP74 init: 50 takeoff: 190 
+02:20:33 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:20:45 New departure TP73 on Thread -1072281856
+02:20:50 New departure TP74 on Thread -1080674560
+02:20:55 New departure TP75 on Thread -1091262720
+02:21:39 Wrong command => DEPARTURE TP73 init: 40 takeoff: 180 
+02:21:43 Wrong command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:21:51 Wrong command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:21:56 Wrong command => DEPARTURE TP74 init: 50 takeoff: 180 
+02:22:03 Wrong command => DEPARTURE TP75 init: 60 takeoff: 200 
+02:22:11 Program finished running.
+02:22:15 Program started running.
+02:22:15 Program started running.
+02:22:18 New command => DEPARTURE TP75 init: 60 takeoff: 200 
+02:22:18 New command => DEPARTURE TP74 init: 50 takeoff: 180 
+02:22:20 New command => DEPARTURE TP73 init: 40 takeoff: 190 
+02:22:35 New departure TP73 on Thread 1592772352
+02:22:40 New departure TP74 on Thread 1582184192
+02:22:45 New departure TP75 on Thread 1573791488
+02:22:48 Program finished running.

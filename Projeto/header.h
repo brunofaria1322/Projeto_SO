@@ -124,5 +124,5 @@ int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
 pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
-pthread_mutex_t log_mutex;  //mutex for access to shared memoru
+//pthread_mutex_t log_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru

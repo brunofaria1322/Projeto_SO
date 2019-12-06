@@ -5,7 +5,7 @@ int main(int argc, char *argv[]){
 	//Initializing
 
 	//Variables
-	pthread_mutex_init(&shm,NULL);
+	pthread_mutex_init(&shm_mutex,NULL);
 	int fd,i,num;
 	char buff[MAX];
 	char args[32][MAX];
@@ -175,7 +175,7 @@ void sigint (int signum){
 		semctl(semid, 0, IPC_RMID);				//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
-		pthread_mutex_destroy(&shm);			//releases mutex
+		pthread_mutex_destroy(&shm_mutex);			//releases mutex
 		exit(0);
 	}
 	else{
@@ -185,11 +185,11 @@ void sigint (int signum){
 }
 
 void showStats (int signum){
-	pthread_mutex_lock(&shm);
+	pthread_mutex_lock(&shm_mutex);
 
 	printf("Total number of flights created: %d\nTotal number of flights that landed: %d\nAverage wait time (beyond ETA) to land: %d\nTotal number of flights that took off: %d\nAverage wait time to take off: %d\nAverage number of holding maneuvers per landing flight: %d\nAverage number of holding maneuvers per emergency flight: %d\nNumber of flights redirected to another airport: %d\nFlights rejected by the Control Tower: %d\n",mem->flights_created,mem->flights_landed,mem->time2land,mem->flights_takingoff,mem->time2takeoff,mem->hm,mem->hm_emergency,mem->flights_redirected,mem->flights_rejected);
 
-	pthread_mutex_unlock(&shm);
+	pthread_mutex_unlock(&shm_mutex);
 }
 
 void printData(Data data){
@@ -321,13 +321,14 @@ void *fDepart(Departure * departure){
 	#ifdef DEBUG
 		printf("saida da Thread na Departur\n");
 	#endif
-	msgrcv(mqid, &msgs, sizeof(msgs)-sizeof(long), 3, 0);
-	printf("slot = %d", msgs.slot);
+	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
+	printf("slot = %d\n", msgs.slot);
 	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
+
 	while(1){
-		if(strcmp(mem->slots[slot]),BYEBYE)==0){
+		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
@@ -352,13 +353,13 @@ void *fArrival(Arrival * arrival){
 	#ifdef DEBUG
 		printf("saida da Thread na Arrival\n");
 	#endif
-	int slot;
+	//int slot;
 	msgrcv(mqid, &msgs, sizeof(msgs)-sizeof(long), 3, 0);
 	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
 	while(1){
-		if(strcmp(mem->slots[slot]),BYEBYE)==0){
+		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
