@@ -58,6 +58,7 @@ typedef struct{
 
 typedef struct Arr_q{
 	Arrival* arr;
+  int slot;
 	struct Arr_q* next;
 }Arr_q;
 
@@ -134,3 +135,5 @@ SharedMemory *mem;    //pointer to the shared memory
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
 sem_t *semLog, *semShM;
                     //, *semMQ, *semArrival, *semDepart;
+Dep_q* dep_q;
+Arr_q* arr_q;

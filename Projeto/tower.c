@@ -1,4 +1,43 @@
 #include "header.h"
+void * twtimer(){
+	Arr_q * aux, *tmp, *ant;
+	ant=NULL;
+	while(1){
+		aux=arr_q;
+		while(aux){
+			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){
+				strcpy(mem->slots[aux->slot],BYEBYE);
+				if(aux->arr->fuel<=0){
+					mem->flights_redirected++;
+				}
+				tmp=arr_q;
+				if (!ant){
+					if(tmp->next!=NULL){
+						arr_q=tmp.next;
+						free(tmp);
+					}
+					else{
+							arr_q=NULL;
+					}
+				}
+				else{
+					tmp=aux;
+					aux=aux.next;
+					ant->next=tmp.next;
+					free(tmp);
+				}
+			}
+			else{
+				aux->arr->fuel--;
+				aux->arr->eta--;
+				ant=aux;
+				aux = aux->next;
+			}
+
+		}
+		usleep(data.ut*1000);
+	}
+}
 void printarr(Arr_q* arrq){
 	Arr_q* copy;
 	copy = arrq;
@@ -93,9 +132,9 @@ void tower(){
 	#endif
 	Msg_deparr msgd;
 	Msg_slot msgs;
-	Dep_q* dep_q = (Dep_q*)malloc(sizeof(Dep_q));
+	dep_q = (Dep_q*)malloc(sizeof(Dep_q));
 	dep_q = NULL;
-	Arr_q* arr_q = (Arr_q*)malloc(sizeof(Arr_q));
+	arr_q = (Arr_q*)malloc(sizeof(Arr_q));
 	arr_q = NULL;
 	while(1){
 		printf("tou a oubire\n");
