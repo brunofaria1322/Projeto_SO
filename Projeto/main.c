@@ -43,16 +43,11 @@ int main(int argc, char *argv[]){
 
 	mem = (SharedMemory*) shmat(shmid, NULL, 0);
 
-	Data data;
 	data=readConfig(data);
 
 	#ifdef DEBUG
 	printData(data);
 	#endif
-	maxD = data.D;
-	maxA = data.A;
-	tLand = data.L;
-	tTkof = data.T;
 
 	mem->flights_created = 0;
 	mem->flights_landed = 0;
@@ -360,7 +355,7 @@ void *fArrival(Arrival * arrival){
 	Msg_slot msgs;
 	msgd.mtype = 2;
 	msgd.arr=*(arrival);
-	if (msgd.arr.fuel<msgd.arr.eta+tLand+4){
+	if (msgd.arr.fuel<msgd.arr.eta+data.L+4){
 		msgd.arr.emer = 1;
 	}
 	else{msgd.arr.emer = 0;}
