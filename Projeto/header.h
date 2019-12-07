@@ -24,6 +24,7 @@
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
 #define BYEBYE "byebye"
+#define DOURJOB "dourjob"
 
 
 typedef struct{
@@ -47,6 +48,7 @@ typedef struct{
 
 typedef struct Dep_q{
 	Departure* dep;
+  int slot;
 	struct Dep_q* next;
 }Dep_q;
 

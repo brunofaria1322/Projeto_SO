@@ -30,6 +30,7 @@ void tower(){
 				dep->dep = (Departure*)malloc(sizeof(Departure));
 				strcpy(dep->dep->code,msgd.dep.code);
 				dep->dep->takeoff = msgd.dep.takeoff;
+				dep->slot = msgs.slot;
 				dep->next=NULL;
 				dep_q=addDeparture(dep,dep_q);
 				printdep(dep_q);
@@ -41,7 +42,7 @@ void tower(){
 				else{sprintf(frej, "[Control Tower] Flight %s was rejected (fuel would not be enough).",msgd.dep.code);}
 				writeLog(f,frej);
 				sem_wait(semShM);
-				*(mem->slots+(int)msgd.mtype)=BYEBYE;
+				mem->slots[msgs.slot]=BYEBYE;
 				mem->flights_rejected++;
 				sem_post(semShM);
 				D--;
@@ -73,7 +74,7 @@ void tower(){
 				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Arrivals was reached).",msgd.arr.code);
 				writeLog(f,frej);
 				sem_wait(semShM);
-				*(mem->slots+(int)msgd.mtype)="byebye";
+				mem->slots[msgs.slot]=BYEBYE;
 				mem->flights_rejected++;
 				sem_post(semShM);
 				A--;
@@ -221,4 +222,33 @@ int insert_slot(char* slots[16], char* inst){
 		}
 	}
 	return -1;
+}
+void* flight_selector(){
+	Dep_q* tempd = dep_q;
+	Arr_q* tempa = arr_q;
+	if ((arr_q->arr->eta <= dep_q->dep->takeoff - t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - t + data.T)){
+		sem_wait(semArr);
+		sem_getvalue(semDep,0);
+		mem->slots[arr_q->slot]=DOURJOB;
+		if (tempa->next!=NULL){
+			arr_q = tempa->next;
+			free(tempa);
+		}
+		else{
+			arr_q=NULL;
+		}
+	}
+	else{
+		sem_wait(semDep);
+		sem_getvalue(semArr,0);
+		mem->slots[dep_q->slot]=DOURJOB;
+		if (tempd->next!=NULL){
+			dep_q = tempd->next;
+			free(tempd);
+		}
+		else{
+			dep_q=NULL;
+		}
+	}
+	return 0;
 }

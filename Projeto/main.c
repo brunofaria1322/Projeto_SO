@@ -351,6 +351,16 @@ void *fDepart(Departure * departure){
 			pthread_exit(NULL);
 			return NULL;
 		}
+		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
+			mem->flights_takingoff++;
+			char buf[MAX];
+			sprintf(buf,"Flight %s had just took off. Bon Voyage!",departure->code);
+			writeLog(f,buf);
+			usleep(data.dt*1000);
+			sem_post(semDep);
+			pthread_exit(NULL);
+			return NULL;
+		}
 		sem_post(semShM);
 	}
 }
@@ -387,6 +397,16 @@ void *fArrival(Arrival * arrival){
 		sem_wait(semShM);
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
+			pthread_exit(NULL);
+			return NULL;
+		}
+		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
+			mem->flights_takingoff++;
+			char buf[MAX];
+			sprintf(buf,"Flight %s had just arrived.",arrival->code);
+			writeLog(f,buf);
+			usleep(data.dl*1000);
+			sem_post(semArr);
 			pthread_exit(NULL);
 			return NULL;
 		}
