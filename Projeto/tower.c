@@ -90,11 +90,11 @@ void * twtimer(){
 		sem_wait(semTim); 		//espera por alteração no tempo
 		ant=NULL;
 		aux=arr_q;
-		while(aux){
+		while(aux){						//enquanto existir elementos na queue dos arrivals
 			sem_wait(semShM);		///removable
 			memslots=mem->slots;
 			sem_post(semShM);			//removable
-			if(aux->arr->fuel<=0 || strcmp(memslots[aux->slot],BYEBYE)==0){
+			if(aux->arr->fuel<=0 || strcmp(memslots[aux->slot],BYEBYE)==0){		//se for para remover
 				printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
@@ -103,6 +103,10 @@ void * twtimer(){
 					mem->flights_redirected++;
 				}
 				sem_post(semShM);			//removable
+
+				printf("vou dar post em %s\n",aux->arr->code);
+				sem_post(mem->flights[aux->slot]);				//para thread ir ler shared memory
+				printf("dei post em %s\n",aux->arr->code);
 				if (!ant){
 					if(aux->next!=NULL){				//Im the first
 						arr_q=tmp->next;

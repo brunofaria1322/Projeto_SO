@@ -191,7 +191,14 @@ void sigint (int signum){
 		sem_unlink(SEMSHM);								//unlink SharedMemory semaphore
 	  sem_unlink(SEMARR);								//unlink Arrival semaphore
 	  sem_unlink(SEMDEP);								//unlink Departure semaphore
-		sem_unlink(SEMTIM);								//unlink Time change semaphore
+		sem_unlink(SEMTIM);								//unlink Time change semaphor
+		sem_t **flights=mem->flights;
+		while(*flights){									//closes flights semaphores
+			sem_destroy(*flights);
+			free(*flights);
+			(*flights)++;
+		}
+		free (mem->flights);
 		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
@@ -343,12 +350,20 @@ void *fDepart(Departure * departure){
 	#endif
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
 	printf("slot = %d\n", msgs.slot);
-	queue_size--;
-	pthread_exit(NULL);
-	return NULL;
+
+	mem->flights=(sem_t **)realloc(mem->flights,sizeof(sem_t*)*(msgs.slot+1));
+	mem->flights[msgs.slot]=(sem_t *)malloc(sizeof(sem_t));
+
+	sem_init(mem->flights[msgs.slot],1,0);
+	sem_t *flight=mem->flights[msgs.slot];
+	// queue_size--;
+
+	// pthread_exit(NULL);
+	// return NULL;
 
 	while(1){
 		//será alterado
+		sem_wait(flight);									//espera pelo sinal da tower
 		//TODO:Usar condition variables
 		sem_wait(semShM);			//será removido
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
@@ -394,14 +409,26 @@ void *fArrival(Arrival * arrival){
 	//int slot;
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
 	printf("slot = %d\n",msgs.slot);
-	queue_size--;
-	pthread_exit(NULL);
-	return NULL;
+
+	mem->flights=(sem_t **)realloc(mem->flights,sizeof(sem_t*)*(msgs.slot+1));
+	mem->flights[msgs.slot]=(sem_t *)malloc(sizeof(sem_t));
+
+
+	sem_init(mem->flights[msgs.slot],1,0);
+	sem_t *flight=mem->flights[msgs.slot];
+
+	// queue_size--;
+	// pthread_exit(NULL);
+	// return NULL;
+
 	while(1){
+		sem_wait(flight);
+		printf("recebi post em %s\n",arrival->code);
 		//mesmo que na thread depart
 		sem_wait(semShM);
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
+			printf("%s: %s\n",arrival->code,BYEBYE);
 			pthread_exit(NULL);
 			return NULL;
 		}
