@@ -259,31 +259,6 @@ void ftimer(info * inf){
 	}
 }
 
-commands* removeFirstCommand(commands * head){
-  // Store head node
-	#ifdef DEBUG
-		printf("Tou na remove\n");
-	#endif
-  commands* temp = head;
-	if (temp->next!=NULL){
-		#ifdef DEBUG
-			printf("mais que 1 elem na remove\n");
-		#endif
-  	head = temp->next;   			// Changed head
-		free(temp);               // free old head
-	}
-	else{
-		#ifdef DEBUG
-			printf("1 elem na remove\n");
-		#endif
-		head=NULL;
-	}
-	#ifdef DEBUG
-		printf("sair da remove\n");
-	#endif
-  return head;
-}
-
 commands* addCommand(commands * node, commands * head){
 	commands *tmp, *ant;
   if (head==NULL){
@@ -317,6 +292,31 @@ commands* addCommand(commands * node, commands * head){
       }
 		}
   return(head);
+}
+
+commands* removeFirstCommand(commands * head){
+  // Store head node
+	#ifdef DEBUG
+		printf("Tou na remove\n");
+	#endif
+  commands* temp = head;
+	if (temp->next!=NULL){
+		#ifdef DEBUG
+			printf("mais que 1 elem na remove\n");
+		#endif
+  	head = temp->next;   			// Changed head
+		free(temp);               // free old head
+	}
+	else{
+		#ifdef DEBUG
+			printf("1 elem na remove\n");
+		#endif
+		head=NULL;
+	}
+	#ifdef DEBUG
+		printf("sair da remove\n");
+	#endif
+  return head;
 }
 
 void *fDepart(Departure * departure){
@@ -378,7 +378,7 @@ void *fArrival(Arrival * arrival){
 	#endif
 	//int slot;
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
-	printf("slot = %d",msgs.slot);
+	printf("slot = %d\n",msgs.slot);
 	queue_size--;
 	pthread_exit(NULL);
 	return NULL;
@@ -396,8 +396,6 @@ void *fArrival(Arrival * arrival){
 	pthread_exit(NULL);
 	return NULL;
 }
-
-
 
 char* command(int argc, char argv[][MAX]){
 	int size = 0;

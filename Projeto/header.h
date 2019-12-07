@@ -101,22 +101,31 @@ typedef struct{
     commands * head;
 }info;
 
-
-commands* removeFirstCommand(commands * head);
+//main
 commands* addCommand(commands * node, commands * head);
-void ftimer(info * inf);
-//float getTime(int ut);
-void printData(Data data);
-Data readConfig(Data data);
-void tower();
-void writeLog(FILE *f, char *log);
+commands* removeFirstCommand(commands * head);
 char* command(int argc, char argv[][MAX]);
-commands * verify (int argc, char argv[][MAX], commands * head);
-
-void *fDepart(Departure * departure);
-void *fArrival(Arrival * arrival);
+void ftimer(info * inf);
 void sigint(int signum);
 void showStats (int signum);
+void *fDepart(Departure * departure);
+void *fArrival(Arrival * arrival);
+//float getTime(int ut);
+void printData(Data data);
+//readConfig
+Data readConfig(Data data);
+//tower
+void tower();
+void * twtimer();
+Dep_q* addDeparture(Dep_q * node, Dep_q * head);
+Arr_q* addArrival(Arr_q * node, Arr_q * head);
+void printdep(Dep_q* copy);
+void printarr(Arr_q* copy);
+int insert_slot(char* slots[16], char* inst);
+//writeLog
+void writeLog(FILE *f, char *log);
+//verify
+commands * verify (int argc, char argv[][MAX], commands * head);
 //void fixInput(char *string);
 
 //Global Variables
