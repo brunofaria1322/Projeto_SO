@@ -72,11 +72,13 @@ int main(int argc, char *argv[]){
   sem_unlink(SEMSHM);
   sem_unlink(SEMARR);
   sem_unlink(SEMDEP);
+	sem_unlink(SEMTIM);
 
   semLog = sem_open(SEMLOG, O_CREAT|O_EXCL, 0600, 1);
   semShM = sem_open(SEMSHM, O_CREAT|O_EXCL, 0600, 1);
 	semArr = sem_open(SEMARR, O_CREAT|O_EXCL, 0600, 2);
 	semDep = sem_open(SEMDEP, O_CREAT|O_EXCL, 0600, 2);
+	semTim = sem_open(SEMTIM, O_CREAT|O_EXCL, 0600, 1);
 
 	// // Create an array of 2 semaphores
 	// #ifdef DEBUG
@@ -184,10 +186,12 @@ void sigint (int signum){
 		sem_close(semShM);								//closes SharedMemory semaphore
 		sem_close(semArr);								//closes Arrival semaphore
 		sem_close(semDep);								//closes Departure semaphore
+		sem_close(semTim);								//closes Time changed semaphore
 		sem_unlink(SEMLOG);								//unlink Log semaphore
 		sem_unlink(SEMSHM);								//unlink SharedMemory semaphore
 	  sem_unlink(SEMARR);								//unlink Arrival semaphore
 	  sem_unlink(SEMDEP);								//unlink Departure semaphore
+		sem_unlink(SEMTIM);								//unlink Time change semaphore
 		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
@@ -256,6 +260,7 @@ void ftimer(info * inf){
 		}
 		usleep (ti);
 		t++;
+		sem_post(semTim);
 	}
 }
 

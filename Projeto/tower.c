@@ -14,7 +14,7 @@ void tower(){
 	pthread_t ttimer;
 	pthread_create(&ttimer,NULL,(void *)twtimer,NULL);
 	while(1){
-		printf("tou a oubire\n");
+		//printf("tou a oubire\n");
 		msgrcv(mqid, &msgd, sizeof(msgd), 0, 0);
 		fflush(stdout);
 		if (msgd.mtype == 1){
@@ -87,7 +87,7 @@ void * twtimer(){
 	Arr_q * aux, *tmp, *ant;
 	char ** memslots;
 	while(1){
-		//variavel de condição com o tempo
+		sem_wait(semTim); 		//espera por alteração no tempo
 		ant=NULL;
 		aux=arr_q;
 		while(aux){
@@ -137,7 +137,6 @@ void * twtimer(){
 			}
 
 		}
-		usleep(data.ut*1000);				//removable after adding conditional variavel
 	}
 }
 void printarr(Arr_q* copy){
