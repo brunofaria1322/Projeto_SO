@@ -187,6 +187,7 @@ void tower(){
 				strcpy(arr->arr->code,msgd.arr.code);
 				arr->arr->eta = msgd.arr.eta;
 				arr->arr->fuel = msgd.arr.fuel;
+				arr->slot = msgs.slot;
 				arr->next=NULL;
 				arr_q=addArrival(arr,arr_q);
 				printarr(arr_q);
