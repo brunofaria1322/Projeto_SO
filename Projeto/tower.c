@@ -13,7 +13,7 @@ void * twtimer(){
 				tmp=arr_q;
 				if (!ant){
 					if(tmp->next!=NULL){
-						arr_q=tmp.next;
+						arr_q=tmp->next;
 						free(tmp);
 					}
 					else{
@@ -22,8 +22,8 @@ void * twtimer(){
 				}
 				else{
 					tmp=aux;
-					aux=aux.next;
-					ant->next=tmp.next;
+					aux=aux->next;
+					ant->next=tmp->next;
 					free(tmp);
 				}
 			}
