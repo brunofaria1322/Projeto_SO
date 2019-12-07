@@ -2,14 +2,22 @@
 void * twtimer(){
 	Arr_q * aux, *tmp, *ant;
 	ant=NULL;
+	char ** memslots;
 	while(1){
+		//variavel de condição com o tempo
 		aux=arr_q;
 		while(aux){
-			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){
+			sem_wait(semShM);		///removable
+			memslots=mem->slots;
+			sem_post(semShM);			//removable
+			if(aux->arr->fuel<=0 || strcmp(memslots[aux->slot],BYEBYE)==0){
+				sem_wait(semShM);		///removable
 				strcpy(mem->slots[aux->slot],BYEBYE);
+
 				if(aux->arr->fuel<=0){
 					mem->flights_redirected++;
 				}
+				sem_post(semShM);			//removable
 				tmp=arr_q;
 				if (!ant){
 					if(tmp->next!=NULL){
@@ -35,7 +43,7 @@ void * twtimer(){
 			}
 
 		}
-		usleep(data.ut*1000);
+		usleep(data.ut*1000);				//removable after adding conditional variavel
 	}
 }
 void printarr(Arr_q* arrq){
