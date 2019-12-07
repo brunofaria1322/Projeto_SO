@@ -14,7 +14,7 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 		head=node;
 	}
   else{
-			if (((head->arr->eta + tLand > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
 			//if ((head->arr->fuel - head->arr->eta +head->arr->init > node->arr->fuel - node->arr->eta+node->arr->init)||(node->arr->emer == 1 && head->arr->emer == 0)) {
 					printf("2\n");
 	  			node->next = head;
@@ -34,7 +34,7 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 					printf("3\n");
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && ((head->arr->eta + tLand <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
+          while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
               ant=tmp;
               tmp=tmp->next;
           }
@@ -78,7 +78,7 @@ Dep_q* addDeparture(Dep_q * node, Dep_q * head){
 
 int insert_slot(char* slots[16], char* inst){
 	int i;
-	for(i=0;i<maxA+maxD;i++){
+	for(i=0;i<data.A+data.D;i++){
 		if(slots[i]==NULL){
 			slots[i]=inst;
 			return i;
@@ -117,9 +117,9 @@ void tower(){
 				dep->next=NULL;
 				dep_q=addDeparture(dep,dep_q);
 				printdep(dep_q);
-			if (D>maxD || msgd.arr.fuel < msgd.arr.eta){
+			if (D>data.D || msgd.arr.fuel < msgd.arr.eta){
 				char * frej = malloc(sizeof(char)*128);
-				if(D>maxD){
+				if(D>data.D){
 					sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Departures was reached).",msgd.dep.code);
 				}
 				else{sprintf(frej, "[Control Tower] Flight %s was rejected (fuel would not be enough).",msgd.dep.code);}
@@ -151,7 +151,7 @@ void tower(){
 				arr->next=NULL;
 				arr_q=addArrival(arr,arr_q);
 				printarr(arr_q);
-			if (A>maxA){
+			if (A>data.A){
 				char * frej = malloc(sizeof(char)*128);
 				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Arrivals was reached).",msgd.arr.code);
 				writeLog(f,frej);

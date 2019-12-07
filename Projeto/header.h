@@ -117,12 +117,9 @@ void showStats (int signum);
 //void fixInput(char *string);
 
 //Global Variables
+Data data;            //Config
 FILE *f;              //log file
 int t;                //time
-int maxA;	            //max active Arrivals allowed
-int maxD;	            //max active Departure allowed
-int tLand;            //time for Landing
-int tTkof;            //time to takeoff;
 pid_t pid;            //distinct father from child process
 int mqid;             //id of message queue
 int queue_size;       //number of active threads
