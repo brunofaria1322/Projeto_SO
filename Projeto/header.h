@@ -19,6 +19,8 @@
 //#define DEBUG   //remove this line to remove debug messages
 #define SEMLOG "SemLog"
 #define SEMSHM "SemShM"
+#define SEMARR "SemArr"
+#define SEMDEP "SemDep"
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
 #define BYEBYE "byebye"
@@ -130,7 +132,7 @@ SharedMemory *mem;    //pointer to the shared memory
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t log_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
-sem_t *semLog, *semShM;
-                    //, *semMQ, *semArrival, *semDepart;
+sem_t *semLog, *semShM, *semArr, *semDep;
+                    //, *semMQ,
 Dep_q* dep_q;
 Arr_q* arr_q;

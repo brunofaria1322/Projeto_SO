@@ -70,9 +70,13 @@ int main(int argc, char *argv[]){
 	//create semaphores
   sem_unlink(SEMLOG);
   sem_unlink(SEMSHM);
+  sem_unlink(SEMARR);
+  sem_unlink(SEMDEP);
 
   semLog = sem_open(SEMLOG, O_CREAT|O_EXCL, 0600, 1);
   semShM = sem_open(SEMSHM, O_CREAT|O_EXCL, 0600, 1);
+	semArr = sem_open(SEMARR, O_CREAT|O_EXCL, 0600, 2);
+	semDep = sem_open(SEMDEP, O_CREAT|O_EXCL, 0600, 2);
 
 	// // Create an array of 2 semaphores
 	// #ifdef DEBUG
@@ -176,10 +180,14 @@ void sigint (int signum){
 		writeLog(f,"Program finished running.");
 		unlink(PIPE_NAME);								//unlink linked pipe
 		fclose(f);												//close log file
-		sem_close(semLog);									//closes log semaphore
-		sem_close(semShM);									//closes SharedMemory semaphore
-		unlink(SEMLOG);										//unlink Log semaphore
-		unlink(SEMSHM);										//unlink SharedMemory semaphore
+		sem_close(semLog);								//closes log semaphore
+		sem_close(semShM);								//closes SharedMemory semaphore
+		sem_close(semArr);								//closes Arrival semaphore
+		sem_close(semDep);								//closes Departure semaphore
+		sem_unlink(SEMLOG);								//unlink Log semaphore
+		sem_unlink(SEMSHM);								//unlink SharedMemory semaphore
+	  sem_unlink(SEMARR);								//unlink Arrival semaphore
+	  sem_unlink(SEMDEP);								//unlink Departure semaphore
 		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
@@ -335,11 +343,15 @@ void *fDepart(Departure * departure){
 	return NULL;
 
 	while(1){
+		//será alterado
+		//TODO:Usar condition variables
+		sem_wait(semShM);			//será removido
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
 		}
+		sem_post(semShM);
 	}
 }
 
@@ -371,11 +383,14 @@ void *fArrival(Arrival * arrival){
 	pthread_exit(NULL);
 	return NULL;
 	while(1){
+		//mesmo que na thread depart
+		sem_wait(semShM);
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
 			return NULL;
 		}
+		sem_post(semShM);
 	}
 	queue_size--;
 	pthread_exit(NULL);
