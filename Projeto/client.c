@@ -10,7 +10,7 @@
 
 
 #define PIPE_NAME   "input_pipe"
-//#define DEBUG
+#define DEBUG
 #define MAX 256
 
 int main(int argc, char *argv[]) {
@@ -32,16 +32,20 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-
-  write(fd,&argc, sizeof(argc));
-
-  for (i=0;i<argc;i++){
-    #ifdef DEBUG
-      printf ("Sending Arg[%d] - %s\n",i,argv[i]);
-    #endif
-    strcpy(buff,argv[i]);
-    write(fd,buff,sizeof(buff));
+  if (argc>=2){
+    strcat(buff,argv[1]);
+    for (i=2;i<argc;i++){
+      strcat(buff," ");
+      strcat(buff,argv[i]);
+    }
   }
+
+  #ifdef DEBUG
+    printf ("Sending %s\n",buff);
+  #endif
+
+  write(fd,buff,sizeof(buff));
+
 
   usleep(100);
   close(fd);

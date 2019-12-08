@@ -65,7 +65,7 @@ void tower(){
 				arr->slot = msgs.slot;
 				arr->next=NULL;
 				arr_q=addArrival(arr,arr_q);
-				//printarr(arr_q);
+				printarr(arr_q);
 			if (A>data.A){
 				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Arrivals was reached).",msgd.arr.code);
 				writeLog(f,frej);
@@ -231,16 +231,16 @@ int insert_slot(char* slots[16], char* inst){
 	return -1;
 }
 void* flight_selector(){
-	Dep_q* tempd = dep_q;
-	Arr_q* tempa = arr_q;
+	Dep_q* tempd;
+	Arr_q* tempa;
 	while (1){
-		//add sem para pistas
+		sem_wait(semRuW);				//wait for runway to be clear
 		tempd = dep_q;
 		tempa = arr_q;
 		if (arr_q!=NULL){
-			//printf("arr_q not null\n" );
+			printf("arr_q not null\n" );
 			if ((dep_q==NULL) && arr_q->arr->eta <=0){
-				//printf("dep_q null, run arriv\n" );
+				printf("dep_q null, run arriv\n" );
 				//ver se possivel juntar par
 				sem_wait(semArr);
 				sem_wait(semDep); sem_wait(semDep);
@@ -261,7 +261,7 @@ void* flight_selector(){
 			else if ((dep_q!=NULL) && ((arr_q->arr->eta <= dep_q->dep->takeoff - mem->t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - mem->t + data.T))){
 				//printf("arr_q and dep_q not null\n" );
 				if ( arr_q->arr->eta <=0){
-					//printf("arr_q and dep_q not null, run arriv\n" );
+					printf("arr_q and dep_q not null, run arriv\n" );
 					//ver se possivel juntar par
 					sem_wait(semArr);
 					sem_wait(semDep); sem_wait(semDep);
@@ -281,7 +281,7 @@ void* flight_selector(){
 				}
 			}
 			else if ((dep_q!=NULL) && dep_q->dep->takeoff <= mem->t){
-				//printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
+				printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
 				//ver se possivel juntar par
 				sem_wait(semDep);
 				sem_wait(semArr); sem_wait(semArr);
@@ -300,11 +300,12 @@ void* flight_selector(){
 				}
 			}
 			else {//incrementar sepaforo
+				sem_post(semRuW);
 					//printf("nothing\n" );
 			}
 		}
 		else if ((dep_q!=NULL) && (dep_q->dep->takeoff <= mem->t)){
-			//printf("arr_q null, run dep\n" );
+			printf("arr_q null, run dep\n" );
 			sem_wait(semDep);
 			sem_wait(semArr); sem_wait(semArr);
 			sem_wait(semShM);
@@ -322,6 +323,7 @@ void* flight_selector(){
 			}
 		}
 		else{//incrementar sepaforo
+			sem_post(semRuW);
 			//printf("nothing\n" );
 		}
 		sleep (2);
