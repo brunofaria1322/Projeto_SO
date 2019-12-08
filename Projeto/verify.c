@@ -19,9 +19,9 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 						writeLog(f,wcom);
 
 						Departure *d = (Departure*)malloc(sizeof(Departure));
-						strcpy(d->code, argv[2]);
-						d->init = atoi(argv[4]);
-						d->takeoff = atoi(argv[6]);
+						strcpy(d->code, argv[1]);
+						d->init = atoi(argv[3]);
+						d->takeoff = atoi(argv[5]);
 						commands * comm= malloc(sizeof(commands));
 						comm->dep=d;
 						comm->arr=NULL;
