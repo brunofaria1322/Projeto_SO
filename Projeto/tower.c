@@ -14,6 +14,7 @@ void tower(){
 	pthread_t ttimer, fselector;
 	pthread_create(&ttimer,NULL,(void *)twtimer,NULL);
 	pthread_create(&fselector,NULL,(void *)flight_selector,NULL);
+	char * frej = malloc(sizeof(char)*128);
 	while(1){
 		//printf("tou a oubire\n");
 		msgrcv(mqid, &msgd, sizeof(msgd), 0, 0);
@@ -34,13 +35,9 @@ void tower(){
 				dep->slot = msgs.slot;
 				dep->next=NULL;
 				dep_q=addDeparture(dep,dep_q);
-				printdep(dep_q);
-			if (D>data.D || msgd.arr.fuel < msgd.arr.eta){
-				char * frej = malloc(sizeof(char)*128);
-				if(D>data.D){
-					sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Departures was reached).",msgd.dep.code);
-				}
-				else{sprintf(frej, "[Control Tower] Flight %s was rejected (fuel would not be enough).",msgd.dep.code);}
+				//printdep(dep_q);
+			if(D>data.D){
+				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Departures was reached).",msgd.dep.code);
 				writeLog(f,frej);
 				sem_wait(semShM);
 				mem->slots[msgs.slot]=BYEBYE;
@@ -48,7 +45,6 @@ void tower(){
 				sem_post(semShM);
 				D--;
 			}
-
 		}
 		else if (msgd.mtype == 2){
 				printf("[Control Tower] Flight %s with a planned eta of %f. Fuel: %f\n",msgd.arr.code,msgd.arr.eta, msgd.arr.fuel);
@@ -69,9 +65,8 @@ void tower(){
 				arr->slot = msgs.slot;
 				arr->next=NULL;
 				arr_q=addArrival(arr,arr_q);
-				printarr(arr_q);
+				//printarr(arr_q);
 			if (A>data.A){
-				char * frej = malloc(sizeof(char)*128);
 				sprintf(frej, "[Control Tower] Flight %s was rejected (maximum Arrivals was reached).",msgd.arr.code);
 				writeLog(f,frej);
 				sem_wait(semShM);
@@ -79,6 +74,14 @@ void tower(){
 				mem->flights_rejected++;
 				sem_post(semShM);
 				A--;
+			}
+			else if (msgd.arr.fuel < msgd.arr.eta){
+				sprintf(frej, "[Control Tower] Flight %s was rejected (fuel would not be enough).",msgd.arr.code);
+				writeLog(f,frej);
+				sem_wait(semShM);
+				mem->slots[msgs.slot]=BYEBYE;
+				mem->flights_rejected++;
+				sem_post(semShM);
 			}
 		}
 	}
@@ -95,7 +98,7 @@ void * twtimer(){
 			i++;
 
 			if(aux->arr->eta<=0 && i >5){
-				if(aux->arr->fuel > (((i-1)/2)*data.L)){
+				if(aux->arr->fuel > (((i-1)/2)*(data.L+data.dl))){
 					aux->arr->eta = ((i-1)/2)*data.L;
 					sem_wait(semShM);
 					mem->slots[aux->slot]=setHolding((int)aux->arr->eta);
@@ -105,7 +108,7 @@ void * twtimer(){
 					mem->slots[aux->slot]=BYEBYE;
 			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
-				printf("Fuel tá a zero em %s\n",aux->arr->code);
+				//printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
 
@@ -121,11 +124,13 @@ void * twtimer(){
 					if(aux->next!=NULL){				//Im the first
 						arr_q=tmp->next;
 						free(tmp);
+						i--;
 					}
 					else{												//Im the only one
 						aux=NULL;
 						free(arr_q);
 						arr_q=NULL;
+						i--;
 					}
 				}
 				else{
@@ -134,14 +139,16 @@ void * twtimer(){
 						aux=aux->next;
 						ant->next=tmp->next;
 						free(tmp);
+						i--;
 					}
 					else{												//Im the last
 						aux =NULL;
 						free(ant->next);
 						ant->next=NULL;
+						i--;
 					}
 				}
-				printarr(arr_q);
+				//printarr(arr_q);
 			}
 			else{
 				aux->arr->fuel--;
@@ -231,9 +238,9 @@ void* flight_selector(){
 		tempd = dep_q;
 		tempa = arr_q;
 		if (arr_q!=NULL){
-			printf("arr_q not null\n" );
+			//printf("arr_q not null\n" );
 			if ((dep_q==NULL) && arr_q->arr->eta <=0){
-				printf("dep_q null, run arriv\n" );
+				//printf("dep_q null, run arriv\n" );
 				//ver se possivel juntar par
 				sem_wait(semArr);
 				sem_wait(semDep); sem_wait(semDep);
@@ -252,9 +259,9 @@ void* flight_selector(){
 				}
 			}
 			else if ((dep_q!=NULL) && ((arr_q->arr->eta <= dep_q->dep->takeoff - mem->t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - mem->t + data.T))){
-				printf("arr_q and dep_q not null\n" );
+				//printf("arr_q and dep_q not null\n" );
 				if ( arr_q->arr->eta <=0){
-					printf("arr_q and dep_q not null, run arriv\n" );
+					//printf("arr_q and dep_q not null, run arriv\n" );
 					//ver se possivel juntar par
 					sem_wait(semArr);
 					sem_wait(semDep); sem_wait(semDep);
@@ -274,7 +281,7 @@ void* flight_selector(){
 				}
 			}
 			else if ((dep_q!=NULL) && dep_q->dep->takeoff <= mem->t){
-				printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
+				//printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
 				//ver se possivel juntar par
 				sem_wait(semDep);
 				sem_wait(semArr); sem_wait(semArr);
@@ -293,11 +300,11 @@ void* flight_selector(){
 				}
 			}
 			else {//incrementar sepaforo
-					printf("nothing\n" );
+					//printf("nothing\n" );
 			}
 		}
 		else if ((dep_q!=NULL) && (dep_q->dep->takeoff <= mem->t)){
-			printf("arr_q null, run dep\n" );
+			//printf("arr_q null, run dep\n" );
 			sem_wait(semDep);
 			sem_wait(semArr); sem_wait(semArr);
 			sem_wait(semShM);
@@ -315,7 +322,7 @@ void* flight_selector(){
 			}
 		}
 		else{//incrementar sepaforo
-			printf("nothing\n" );
+			//printf("nothing\n" );
 		}
 		sleep (2);
 	}

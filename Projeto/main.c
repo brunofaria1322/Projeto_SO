@@ -359,7 +359,7 @@ void *fDepart(Departure * departure){
 	#endif
 
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
-	printf("slot = %d\n", msgs.slot);
+	//printf("slot = %d\n", msgs.slot);
 
 	sem_init(&mem->flights[msgs.slot],1,0);
 	int vsem;
@@ -425,7 +425,7 @@ void *fArrival(Arrival * arrival){
 	#endif
 	//int slot;
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
-	printf("slot = %d\n",msgs.slot);
+	//printf("slot = %d\n",msgs.slot);
 
 
 	sem_wait(semShM);
@@ -437,7 +437,7 @@ void *fArrival(Arrival * arrival){
 	while(1){
 
 		sem_wait(&mem->flights[msgs.slot]);
-		printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
+		//printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
 
 		if (mem->slots[msgs.slot]){
 			delay = getHolding(mem->slots[msgs.slot]);
