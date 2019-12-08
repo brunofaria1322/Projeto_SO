@@ -176,14 +176,14 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 		head=node;
 	}
   else{
-			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			if (((head->arr->eta + (float)(data.L) > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
 	  			node->next = head;
           head=node;
       }
       else {
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
+          while ((tmp!=NULL) && ((head->arr->eta + (float)(data.L) <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
               ant=tmp;
               tmp=tmp->next;
           }

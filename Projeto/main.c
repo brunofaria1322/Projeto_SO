@@ -437,7 +437,7 @@ void *fArrival(Arrival * arrival){
 	Msg_slot msgs;
 	msgd.mtype = 2;
 	msgd.arr=*(arrival);
-	if (msgd.arr.fuel<msgd.arr.eta+data.L+4){
+	if (msgd.arr.fuel<msgd.arr.eta+(float)(data.L+4)){
 		msgd.arr.emer = 1;
 	}
 	else{msgd.arr.emer = 0;}
@@ -504,7 +504,6 @@ void *fArrival(Arrival * arrival){
 			}
 
 			else if(delay>0){
-				char buf[MAX];
 				sprintf(buf,"Flight %s will do an holding maneuver. ETA: %d",arrival->code, delay);
 				writeLog(f,buf);
 			}
@@ -513,14 +512,14 @@ void *fArrival(Arrival * arrival){
 }
 
 char* command(int argc, char argv[][MAX]){
-	int size = 0;
-	for(int i=0;i<argc;i++){
+	int i,size = 0;
+	for(i=0;i<argc;i++){
 		size = size + strlen(argv[i]);
 	}
 	printf("Alocar no comand\n");
 	char * com = (char*)malloc(size*sizeof(char)+1 + argc);
 	printf("Aloquei no comand\n");
-	for(int i=0; i<argc;i++){
+	for(i=0; i<argc;i++){
 		strcat(com,argv[i]); strcat(com," ");
 	}
 	return com;
