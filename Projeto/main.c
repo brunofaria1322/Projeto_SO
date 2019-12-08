@@ -359,11 +359,6 @@ void *fDepart(Departure * departure){
 	printf("slot = %d\n", msgs.slot);
 
 	sem_init(&mem->flights[msgs.slot],1,0);
-	printf("slot = %d\n", msgs.slot);
-	// queue_size--;
-
-	// pthread_exit(NULL);
-	// return NULL;
 
 	while(1){
 		//será alterado
@@ -418,16 +413,14 @@ void *fArrival(Arrival * arrival){
 	sem_init(&mem->flights[msgs.slot],1,0);
 	sem_post(semShM);
 
-	printf("slot = %d\n",msgs.slot);
-
 	while(1){
 
 		sem_wait(&mem->flights[msgs.slot]);
-		printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
+		//printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
 
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
-			printf("%s: %s\n",arrival->code,BYEBYE);
+			//printf("%s: %s\n",arrival->code,BYEBYE);
 			pthread_exit(NULL);
 		}
 		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){				//voar
