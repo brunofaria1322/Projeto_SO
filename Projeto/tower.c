@@ -92,7 +92,7 @@ void * twtimer(){
 		while(aux){						//enquanto existir elementos na queue dos arrivals
 
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
-				printf("Fuel tá a zero em %s\n",aux->arr->code);
+				//printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
 
@@ -101,7 +101,6 @@ void * twtimer(){
 				}
 
 				sem_post(&mem->flights[aux->slot]);				//para thread ir ler shared memory
-				printf("POSTEI %d\n",aux->slot);
 
 				sem_post(semShM);			//removable
 
@@ -155,23 +154,10 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 	}
   else{
 			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
-			//if ((head->arr->fuel - head->arr->eta +head->arr->init > node->arr->fuel - node->arr->eta+node->arr->init)||(node->arr->emer == 1 && head->arr->emer == 0)) {
-					//printf("2\n");
 	  			node->next = head;
           head=node;
       }
-			// else if (node->arr->emer == 1 && head->arr->emer == 1){
-			// 	ant=head;
-			// 	tmp=head->next;
-			// 	while ((head!=0) || (head->arr->fuel - head->arr->eta + head->arr->init <= node->arr->fuel - node->arr->eta + node->arr->init)) {
-			// 			ant=tmp;
-			// 			tmp=tmp->next;
-			// 	}
-			// 	node->next=tmp;
-			// 	ant->next=node;
-			// }
       else {
-					//printf("3\n");
           ant=head;
           tmp=head->next;
           while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {

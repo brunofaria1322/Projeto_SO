@@ -194,16 +194,17 @@ void sigint (int signum){
 	  sem_unlink(SEMARR);								//unlink Arrival semaphore
 	  sem_unlink(SEMDEP);								//unlink Departure semaphore
 		sem_unlink(SEMTIM);								//unlink Time change semaphor
-// 		sem_t *flights=mem->flights;
-//
-// 		sem_t *ant=mem->flights;
-// //bai dar errp
-// 		while(*flights){									//closes flights semaphores
-// 			sem_destroy(*flights);
-// 			free(*flights);
-// 			(*flights)++;
-// 		}
-// 		free (mem->flights);
+
+		sem_t *flights=mem->flights;
+		char** slot=mem->slots;
+		int i;
+		for(i=0;i<data.A+data.D;i++){			//closes flights semaphores
+				if(slot[i]!=NULL){
+					sem_destroy(&flights[i]);
+				}
+				else break;
+			}
+
 		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
