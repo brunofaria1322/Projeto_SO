@@ -15,8 +15,8 @@
 #include <pthread.h>
 #include <sys/msg.h>
 
-#define MAX 256
-//#define DEBUG   //remove this line to remove debug messages
+#define MAX 512
+#define DEBUG   //remove this line to remove debug messages
 #define SEMLOG "SemLog"
 #define SEMSHM "SemShM"
 #define SEMARR "SemArr"

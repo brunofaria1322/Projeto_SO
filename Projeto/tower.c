@@ -7,14 +7,14 @@ void tower(){
 	#endif
 	Msg_deparr msgd;
 	Msg_slot msgs;
-	dep_q = (Dep_q*)malloc(sizeof(Dep_q));
+	//dep_q = (Dep_q*)malloc(sizeof(Dep_q));
 	dep_q = NULL;
-	arr_q = (Arr_q*)malloc(sizeof(Arr_q));
+	//arr_q = (Arr_q*)malloc(sizeof(Arr_q));
 	arr_q = NULL;
 	pthread_t ttimer, fselector;
 	pthread_create(&ttimer,NULL,(void *)twtimer,NULL);
 	pthread_create(&fselector,NULL,(void *)flight_selector,NULL);
-	char * frej = malloc(sizeof(char)*128);
+	char frej [128];
 	while(1){
 		//printf("tou a oubire\n");
 		msgrcv(mqid, &msgd, sizeof(msgd), 0, 0);
@@ -104,8 +104,11 @@ void * twtimer(){
 					mem->slots[aux->slot]=setHolding((int)aux->arr->eta);
 					sem_post(semShM);
 				}
-				else
+				else{
+					sem_wait(semShM);
 					mem->slots[aux->slot]=BYEBYE;
+					sem_post(semShM);
+				}
 			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
 				printf("Fuel tá a zero em %s\n",aux->arr->code);
@@ -127,7 +130,7 @@ void * twtimer(){
 						i--;
 					}
 					else{												//Im the only one
-						aux=NULL;
+						//aux=NULL;
 						free(arr_q);
 						arr_q=NULL;
 						i--;
@@ -142,7 +145,7 @@ void * twtimer(){
 						i--;
 					}
 					else{												//Im the last
-						aux =NULL;
+						//aux =NULL;
 						free(ant->next);
 						ant->next=NULL;
 						i--;

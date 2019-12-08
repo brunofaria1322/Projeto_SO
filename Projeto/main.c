@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 	mem->flights_redirected = 0;
 	mem->flights_rejected = 0;
 
-	commands * head=(commands *) malloc(sizeof(commands));
+	commands * head; //=(commands *) malloc(sizeof(commands));
 	head=NULL;
 
 	//mem->flights=(sem_t *) malloc(sizeof(sem_t)*(data.A+data.D+1));
@@ -152,6 +152,7 @@ int main(int argc, char *argv[]){
 			// }
 
 			close(fd);
+			printf("%s\n", buff);
 
 			char* aux_com;
 			com=strtok_r(buff,"\n",&aux_com);
@@ -172,8 +173,9 @@ int main(int argc, char *argv[]){
 						printf ("Arg[%d] - %s\n",i,args[i]);
 					}
 				#endif
-
+				printf("Verify\n" );
 				inf->head=verify(num, args, inf->head);
+				printf("terminou verify\n" );
 				#ifdef DEBUG
 					if (inf->head) printf ("head->init: %d\ni",inf->head->init);
 				#endif
@@ -515,7 +517,9 @@ char* command(int argc, char argv[][MAX]){
 	for(int i=0;i<argc;i++){
 		size = size + strlen(argv[i]);
 	}
+	printf("Alocar no comand\n");
 	char * com = (char*)malloc(size*sizeof(char)+1 + argc);
+	printf("Aloquei no comand\n");
 	for(int i=0; i<argc;i++){
 		strcat(com,argv[i]); strcat(com," ");
 	}
@@ -527,6 +531,7 @@ char * setHolding(int delay){
 	strcpy(mt,MAKETIME);
 	sprintf(delays, "%d",delay);
 	strcat(mt,delays);
+	free(delays);
 return mt;
 }
 int getHolding(char* holding){

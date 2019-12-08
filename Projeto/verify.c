@@ -4,6 +4,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 	if (argc > 0){
 		char * com = command(argc, argv);
 		if (strcmp(argv[0],"DEPARTURE")==0){
+			printf("DEPARTURE\n" );
 			if(argc == 6){
 				if (strcmp(argv[2],"init:")==0 && atoi(argv[3]) !=0 && strcmp(argv[4],"takeoff:")==0 && atoi(argv[5]) != 0){
 					if (atoi(argv[3]) < mem->t || atoi(argv[5])<atoi(argv[3])){
@@ -11,12 +12,14 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 						writeLog(f,wcom);
+						free(wcom);
 					}
 					else{
-						char * com = command(6, argv);
+						//char * com = command(6, argv);
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
 						strcpy(wcom,"New command => "); strcat(wcom,com);
 						writeLog(f,wcom);
+						free(wcom);
 
 						Departure *d = (Departure*)malloc(sizeof(Departure));
 						strcpy(d->code, argv[2]);
@@ -48,6 +51,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 					char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 					strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 					writeLog(f,wcom);
+					free(wcom);
 				}
 			}
 			else{
@@ -57,10 +61,11 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 				char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 				strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 				writeLog(f,wcom);
+				free(wcom);
 			}
 		}
 		else if (strcmp(argv[0],"ARRIVAL")==0){
-			//char * com = command(argc, argv);
+			printf("arrival\n" );
 			if(argc == 8){
 				if (strcmp(argv[2],"init:")==0 && atoi(argv[3]) !=0 && strcmp(argv[4],"eta:")==0 && atoi(argv[5]) != 0 && strcmp(argv[6],"fuel:") ==0 && atoi(argv[7]) != 0){
 					if (atoi(argv[3])<mem->t){
@@ -68,12 +73,17 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 						writeLog(f,wcom);
+						free(wcom);
 					}
 					else{
 						//char * com = command(9, argv);
-						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
+						printf("Alocando para wcom\n" );
+						char * wcom = (char*) malloc(strlen(com)*sizeof(char)+15);
+
+						printf("Alocado com sucesso\n" );
 						strcpy(wcom,"New command => "); strcat(wcom,com);
 						writeLog(f,wcom);
+						free(wcom);
 
 						Arrival *a = (Arrival*)malloc(sizeof(Arrival));
 						strcpy(a->code, argv[1]);
@@ -106,6 +116,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 					char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 					strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 					writeLog(f,wcom);
+					free(wcom);
 				}
 			}
 			else{
@@ -125,6 +136,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 			char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 			strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 			writeLog(f,wcom);
+			free(wcom);
 		}
 	}
 	return head;
