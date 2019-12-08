@@ -424,35 +424,38 @@ void *fArrival(Arrival * arrival){
 	while(1){
 
 		sem_wait(&mem->flights[msgs.slot]);
-		//printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
+		printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
 
-		int delay = getHolding(mem->slots[msgs.slot]);
-		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
-			queue_size--;
-			//printf("%s: %s\n",arrival->code,BYEBYE);
-			pthread_exit(NULL);
-		}
-		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){				//voar
-			sem_wait(semShM);
-			mem->flights_takingoff++;
-			sem_post(semShM);
-
-			char buf[MAX];
-			sprintf(buf,"Flight %s had just arrived.",arrival->code);
-			writeLog(f,buf);
-			usleep(data.dl*1000);
-			sem_post(semArr);				//libertar pista
-			sem_getvalue(semArr,&vsem);
-			if(vsem == 2){
-				sem_post(semDep);
-				sem_post(semDep);
+		if (mem->slots[msgs.slot]){
+			delay = getHolding(mem->slots[msgs.slot]);
+    	printf("%d\n",delay);
+			if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
+				queue_size--;
+				//printf("%s: %s\n",arrival->code,BYEBYE);
+				pthread_exit(NULL);
 			}
-			pthread_exit(NULL);
-		}
-		else if(delay>0){
-			char buf[MAX];
-			sprintf(buf,"Flight %s will do an holding maneuver. ETA: %d",arrival->code, delay);
-			writeLog(f,buf);
+			else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){				//voar
+				sem_wait(semShM);
+				mem->flights_takingoff++;
+				sem_post(semShM);
+
+				char buf[MAX];
+				sprintf(buf,"Flight %s had just arrived.",arrival->code);
+				writeLog(f,buf);
+				usleep(data.dl*1000);
+				sem_post(semArr);				//libertar pista
+				sem_getvalue(semArr,&vsem);
+				if(vsem == 2){
+					sem_post(semDep);
+					sem_post(semDep);
+				}
+				pthread_exit(NULL);
+			}
+			else if(delay>0){
+				char buf[MAX];
+				sprintf(buf,"Flight %s will do an holding maneuver. ETA: %d",arrival->code, delay);
+				writeLog(f,buf);
+			}
 		}
 	}
 }
@@ -472,13 +475,21 @@ char* command(int argc, char argv[][MAX]){
 char * setHolding(int delay){
 	char * mt = (char*)malloc(sizeof(char)*16);
 	char * delays = (char*)malloc(sizeof(char)*5);
-	mt = MAKETIME;
-	itoa(delay,delays,10);
+	strcpy(mt,MAKETIME);
+	sprintf(delays, "%d",delay);
 	strcat(mt,delays);
 return mt;
 }
 int getHolding(char* holding){
-	return atoi(strtok(holding,MAKETIME));
+	char temp[16];
+	strcpy(temp,holding);
+	holding=strtok(temp,MAKETIME);
+	if (holding){
+		return atoi(holding);
+	}
+	else{
+		return 0;
+	}
 }
 /*
 float getTime(int ut){

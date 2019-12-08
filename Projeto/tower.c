@@ -92,18 +92,19 @@ void * twtimer(){
 		int i = 0;
 		while(aux){						//enquanto existir elementos na queue dos arrivals
 			i++;
-			time = time + aux->arr->eta;
 
 			if(aux->arr->eta<=0 && i >5){
-				if(aux->arr->fuel > time){
-					aux->arr->eta = (int)((i-1)/2)*data.L;
+				if(aux->arr->fuel > (((i-1)/2)*data.L)){
+					aux->arr->eta = ((i-1)/2)*data.L;
 					sem_wait(semShM);
-					mem->slots[aux->slot]=setHolding(time);
+					mem->slots[aux->slot]=setHolding((int)aux->arr->eta);
 					sem_post(semShM);
 				}
+				else
+					mem->slots[aux->slot]=BYEBYE;
 			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
-				//printf("Fuel tá a zero em %s\n",aux->arr->code);
+				printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
 
