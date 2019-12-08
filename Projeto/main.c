@@ -235,7 +235,7 @@ void ftimer(info * inf){
 		printf("UT %d\n",inf->ut);
 	#endif
 
-	t=0; int ti=1000*inf->ut;
+	int t=0; int ti=1000*inf->ut;
 	while (1){
 		if(t%30==0){
 			printf("Time: %d\n",t);
@@ -273,6 +273,9 @@ void ftimer(info * inf){
 		}
 		usleep (ti);
 		t++;
+		sem_wait(semShM);
+		mem->t=t;
+		sem_post(semShM);
 		sem_post(semTim);
 	}
 }
@@ -368,15 +371,23 @@ void *fDepart(Departure * departure){
 					//será removido
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
+			sem_destroy(&mem->flights[msgs.slot]);
+			mem->slots[msgs.slot]=NULL;
 			pthread_exit(NULL);
 		}
 		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
 			sem_wait(semShM);
 			mem->flights_takingoff++;
 			sem_post(semShM);
-			char buf[MAX];
+
+			sprintf(buf,"Flight %s starting to take off.",departure->code);
+			writeLog(f,buf);
+
+			usleep(data.T*1000);
+
 			sprintf(buf,"Flight %s had just took off. Bon Voyage!",departure->code);
 			writeLog(f,buf);
+
 			usleep(data.dt*1000);
 			sem_post(semDep);						//liberta pista
 			sem_getvalue(semDep,&vsem);
@@ -384,6 +395,8 @@ void *fDepart(Departure * departure){
 				sem_post(semArr);
 				sem_post(semArr);
 			}
+			sem_destroy(&mem->flights[msgs.slot]);
+			mem->slots[msgs.slot]=NULL;
 			pthread_exit(NULL);
 		}
 	}
@@ -428,10 +441,13 @@ void *fArrival(Arrival * arrival){
 
 		if (mem->slots[msgs.slot]){
 			delay = getHolding(mem->slots[msgs.slot]);
-    	printf("%d\n",delay);
 			if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 				queue_size--;
 				//printf("%s: %s\n",arrival->code,BYEBYE);
+				sem_destroy(&mem->flights[msgs.slot]);
+				mem->slots[msgs.slot]=NULL;
+				sprintf(buf,"Flight %s got redirected to another airport",arrival->code);
+				writeLog(f,buf);
 				pthread_exit(NULL);
 			}
 			else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){				//voar
@@ -439,9 +455,14 @@ void *fArrival(Arrival * arrival){
 				mem->flights_takingoff++;
 				sem_post(semShM);
 
-				char buf[MAX];
-				sprintf(buf,"Flight %s had just arrived.",arrival->code);
+				sprintf(buf,"Flight %s starting to land.",arrival->code);
 				writeLog(f,buf);
+
+				usleep(data.L*1000);
+
+				sprintf(buf,"Flight %s had just landed.",arrival->code);
+				writeLog(f,buf);
+
 				usleep(data.dl*1000);
 				sem_post(semArr);				//libertar pista
 				sem_getvalue(semArr,&vsem);
@@ -449,6 +470,8 @@ void *fArrival(Arrival * arrival){
 					sem_post(semDep);
 					sem_post(semDep);
 				}
+				sem_destroy(&mem->flights[msgs.slot]);
+				mem->slots[msgs.slot]=NULL;
 				pthread_exit(NULL);
 			}
 			else if(delay>0){

@@ -11,8 +11,9 @@ void tower(){
 	dep_q = NULL;
 	arr_q = (Arr_q*)malloc(sizeof(Arr_q));
 	arr_q = NULL;
-	pthread_t ttimer;
+	pthread_t ttimer, fselector;
 	pthread_create(&ttimer,NULL,(void *)twtimer,NULL);
+	pthread_create(&fselector,NULL,(void *)flight_selector,NULL);
 	while(1){
 		//printf("tou a oubire\n");
 		msgrcv(mqid, &msgd, sizeof(msgd), 0, 0);
@@ -225,37 +226,98 @@ int insert_slot(char* slots[16], char* inst){
 void* flight_selector(){
 	Dep_q* tempd = dep_q;
 	Arr_q* tempa = arr_q;
-	if ((arr_q->arr->eta <= dep_q->dep->takeoff - t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - t + data.T)){
-		sem_wait(semArr);
-		sem_wait(semDep); sem_wait(semDep);
-		sem_wait(semShM);
-		mem->slots[arr_q->slot]=DOURJOB;
-		mem->flights_landed++;
-		mem->time2land = (mem->time2land + abs(arr_q->arr->eta))/mem->flights_landed;
-		sem_post(semShM);
-		if (tempa->next!=NULL){
-			arr_q = tempa->next;
-			free(tempa);
+	while (1){
+		//add sem para pistas
+		tempd = dep_q;
+		tempa = arr_q;
+		if (arr_q!=NULL){
+			printf("arr_q not null\n" );
+			if ((dep_q==NULL) && arr_q->arr->eta <=0){
+				printf("dep_q null, run arriv\n" );
+				//ver se possivel juntar par
+				sem_wait(semArr);
+				sem_wait(semDep); sem_wait(semDep);
+				sem_wait(semShM);
+				mem->slots[arr_q->slot]=DOURJOB;
+				sem_post(&mem->flights[arr_q->slot]);				//para thread ir ler shared memory
+				mem->flights_landed++;
+				mem->time2land = (mem->time2land + abs(arr_q->arr->eta))/mem->flights_landed;
+				sem_post(semShM);
+				if (tempa->next!=NULL){
+					arr_q = tempa->next;
+					free(tempa);
+				}
+				else{
+					arr_q=NULL;
+				}
+			}
+			else if ((dep_q!=NULL) && ((arr_q->arr->eta <= dep_q->dep->takeoff - mem->t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - mem->t + data.T))){
+				printf("arr_q and dep_q not null\n" );
+				if ( arr_q->arr->eta <=0){
+					printf("arr_q and dep_q not null, run arriv\n" );
+					//ver se possivel juntar par
+					sem_wait(semArr);
+					sem_wait(semDep); sem_wait(semDep);
+					sem_wait(semShM);
+					mem->slots[arr_q->slot]=DOURJOB;
+					sem_post(&mem->flights[arr_q->slot]);				//para thread ir ler shared memory
+					mem->flights_landed++;
+					mem->time2land = (mem->time2land + abs(arr_q->arr->eta))/mem->flights_landed;
+					sem_post(semShM);
+					if (tempa->next!=NULL){
+						arr_q = tempa->next;
+						free(tempa);
+					}
+					else{
+						arr_q=NULL;
+					}
+				}
+			}
+			else if ((dep_q!=NULL) && dep_q->dep->takeoff <= mem->t){
+				printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
+				//ver se possivel juntar par
+				sem_wait(semDep);
+				sem_wait(semArr); sem_wait(semArr);
+				sem_wait(semShM);
+				mem->slots[dep_q->slot]=DOURJOB;
+				sem_post(&mem->flights[dep_q->slot]);				//para thread ir ler shared memory
+				mem->flights_takingoff++;
+				mem->time2takeoff = (mem->time2takeoff + (int)(mem->t-dep_q->dep->takeoff))/mem->flights_takingoff;
+				sem_post(semShM);
+				if (tempd->next!=NULL){
+					dep_q = tempd->next;
+					free(tempd);
+				}
+				else{
+					dep_q=NULL;
+				}
+			}
+			else {//incrementar sepaforo
+					printf("nothing\n" );
+			}
 		}
-		else{
-			arr_q=NULL;
+		else if ((dep_q!=NULL) && (dep_q->dep->takeoff <= mem->t)){
+			printf("arr_q null, run dep\n" );
+			sem_wait(semDep);
+			sem_wait(semArr); sem_wait(semArr);
+			sem_wait(semShM);
+			mem->slots[dep_q->slot]=DOURJOB;
+			sem_post(&mem->flights[dep_q->slot]);				//para thread ir ler shared memory
+			mem->flights_takingoff++;
+			mem->time2takeoff = (mem->time2takeoff + (int)(mem->t-dep_q->dep->takeoff))/mem->flights_takingoff;
+			sem_post(semShM);
+			if (tempd->next!=NULL){
+				dep_q = tempd->next;
+				free(tempd);
+			}
+			else{
+				dep_q=NULL;
+			}
 		}
+		else{//incrementar sepaforo
+			printf("nothing\n" );
+		}
+		sleep (2);
 	}
-	else{
-		sem_wait(semDep);
-		sem_wait(semArr); sem_wait(semArr);
-		sem_wait(semShM);
-		mem->slots[dep_q->slot]=DOURJOB;
-		mem->flights_takingoff++;
-		mem->time2takeoff = (mem->time2takeoff + (int)(t-dep_q->dep->takeoff))/mem->flights_takingoff;
-		sem_post(semShM);
-		if (tempd->next!=NULL){
-			dep_q = tempd->next;
-			free(tempd);
-		}
-		else{
-			dep_q=NULL;
-		}
-	}
-	return 0;
+	pthread_exit(NULL);
 }

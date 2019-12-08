@@ -97,6 +97,7 @@ typedef struct{
   int flights_redirected;   //Number of flights redirected to another airport
   int flights_rejected;     //Flights rejected by the Control Tower
   char* slots[16];	        //Instructions for each flight
+  int t;                    //timer
   sem_t flights[];          //unnamed semaphores for thread dep or arrival know when to acess shared memory
 }SharedMemory;
 
@@ -114,6 +115,8 @@ void sigint(int signum);
 void showStats (int signum);
 void *fDepart(Departure * departure);
 void *fArrival(Arrival * arrival);
+char * setHolding(int delay);
+int getHolding(char* holding);
 //float getTime(int ut);
 void printData(Data data);
 //readConfig
@@ -126,17 +129,17 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head);
 void printdep(Dep_q* copy);
 void printarr(Arr_q* copy);
 int insert_slot(char* slots[16], char* inst);
+void* flight_selector();
 //writeLog
 void writeLog(FILE *f, char *log);
 //verify
 commands * verify (int argc, char argv[][MAX], commands * head);
 //void fixInput(char *string);
-char * setHolding(int delay);
-int getHolding(char* holding);
+
 //Global Variables
 Data data;            //Config
 FILE *f;              //log file
-int t;                //time
+//int t;                //time
 pid_t pid;            //distinct father from child process
 int mqid;             //id of message queue
 int queue_size;       //number of active threads

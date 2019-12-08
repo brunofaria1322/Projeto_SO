@@ -6,7 +6,7 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 			char * com = command(argc, argv);
 			if(argc == 7){
 				if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"takeoff:")==0 && atoi(argv[6]) != 0){
-					if (atoi(argv[4]) < t || atoi(argv[6])<atoi(argv[4])){
+					if (atoi(argv[4]) < mem->t || atoi(argv[6])<atoi(argv[4])){
 						printf("Error: Inserted times are invalid.");
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
@@ -63,13 +63,13 @@ commands * verify (int argc, char argv[][MAX], commands * head){
 			char * com = command(argc, argv);
 			if(argc == 9){
 				if (strcmp(argv[3],"init:")==0 && atoi(argv[4]) !=0 && strcmp(argv[5],"eta:")==0 && atoi(argv[6]) != 0 && strcmp(argv[7],"fuel:") ==0 && atoi(argv[8]) != 0){
-					if (atoi(argv[4])<t){
+					if (atoi(argv[4])<mem->t){
 						printf("Error: Inserted init time is invalid.");
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+16);
 						strcpy(wcom,"Wrong command => "); strcat(wcom,com);
 						writeLog(f,wcom);
 					}
-					else{ 
+					else{
 						char * com = command(9, argv);
 						char * wcom = (char*)malloc(strlen(com)*sizeof(char)+15);
 						strcpy(wcom,"New command => "); strcat(wcom,com);
