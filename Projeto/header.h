@@ -24,8 +24,9 @@
 #define SEMTIM "SemTim"
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
-#define BYEBYE "byebye"
-#define DOURJOB "dourjob"
+#define BYEBYE "redirected"
+#define DOURJOB "completed"
+#define MAKETIME "holding"
 
 
 typedef struct{
@@ -37,7 +38,7 @@ typedef struct{
   int min;  //holding - MINimum duration (in ut)
   int max;  //holding - MAXimum duration (in ut)
   int D;    //number max of Departs of the sistem
-  int A;    //number max of Arrivals of the sistema
+  int A;    //number max of Arrivals of the sistem
 }Data;
 
 
@@ -130,7 +131,8 @@ void writeLog(FILE *f, char *log);
 //verify
 commands * verify (int argc, char argv[][MAX], commands * head);
 //void fixInput(char *string);
-
+char * setHolding(int delay);
+int getHolding(char* holding);
 //Global Variables
 Data data;            //Config
 FILE *f;              //log file

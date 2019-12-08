@@ -356,6 +356,7 @@ void *fDepart(Departure * departure){
 
 	sem_init(mem->flights[msgs.slot],1,0);
 	sem_t *flight=mem->flights[msgs.slot];
+	int vsem;
 	// queue_size--;
 
 	// pthread_exit(NULL);
@@ -371,13 +372,16 @@ void *fDepart(Departure * departure){
 			pthread_exit(NULL);
 			return NULL;
 		}
-		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
-			mem->flights_takingoff++;
 			char buf[MAX];
 			sprintf(buf,"Flight %s had just took off. Bon Voyage!",departure->code);
 			writeLog(f,buf);
 			usleep(data.dt*1000);
 			sem_post(semDep);
+			sem_getvalue(semDep,&vsem);
+			if(vsem == 2){
+				sem_post(semArr);
+				sem_post(semArr);
+			}
 			pthread_exit(NULL);
 			return NULL;
 		}
@@ -416,6 +420,7 @@ void *fArrival(Arrival * arrival){
 
 	sem_init(mem->flights[msgs.slot],1,0);
 	sem_t *flight=mem->flights[msgs.slot];
+	int vsem;
 
 	// queue_size--;
 	// pthread_exit(NULL);
@@ -439,14 +444,24 @@ void *fArrival(Arrival * arrival){
 			writeLog(f,buf);
 			usleep(data.dl*1000);
 			sem_post(semArr);
+			sem_getvalue(semArr,&vsem);
+			if(vsem == 2){
+				sem_post(semDep);
+				sem_post(semDep);
+			}
 			pthread_exit(NULL);
 			return NULL;
 		}
 		sem_post(semShM);
 	}
-	queue_size--;
-	pthread_exit(NULL);
-	return NULL;
+	int delay = getHolding(mem->slots[msgs.slot]);
+	if(delay>0){
+		char buf[MAX];
+		sprintf(buf,"Flight %s will do an holding maneuver. ETA: %d",arrival->code, delay);
+		writeLog(f,buf);
+	}
+
+	}
 }
 
 char* command(int argc, char argv[][MAX]){
@@ -461,7 +476,17 @@ char* command(int argc, char argv[][MAX]){
 	}
 	return com;
 }
-
+char * setHolding(int delay){
+	char * mt = (char*)malloc(sizeof(char)*16);
+	char * delays = (char*)malloc(sizeof(char)*5);
+	mt = MAKETIME;
+	itoa(delay,delays,10);
+	strcat(mt,delays);
+return mt;
+}
+int getHolding(char* holding){
+	return atoi(strtok(holding,MAKETIME));
+}
 /*
 float getTime(int ut){
 	return (((clock()/CLOCK_PER_SEC)*1000)/ut)
