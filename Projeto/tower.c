@@ -14,7 +14,7 @@ void tower(){
 	pthread_t ttimer, fselector;
 	pthread_create(&ttimer,NULL,(void *)twtimer,NULL);
 	pthread_create(&fselector,NULL,(void *)flight_selector,NULL);
-	char frej [128];
+	char frej[128];
 	while(1){
 		//printf("tou a oubire\n");
 		msgrcv(mqid, &msgd, sizeof(msgd), 0, 0);
@@ -111,7 +111,7 @@ void * twtimer(){
 				}
 			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
-				printf("Fuel tá a zero em %s\n",aux->arr->code);
+				printf("Mandar embora %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
 
@@ -125,12 +125,14 @@ void * twtimer(){
 
 				if (!ant){
 					if(aux->next!=NULL){				//Im the first
+						aux=aux->next;
+						tmp=arr_q;
 						arr_q=tmp->next;
 						free(tmp);
 						i--;
 					}
 					else{												//Im the only one
-						//aux=NULL;
+						aux=NULL;
 						free(arr_q);
 						arr_q=NULL;
 						i--;
@@ -145,7 +147,7 @@ void * twtimer(){
 						i--;
 					}
 					else{												//Im the last
-						//aux =NULL;
+						aux =NULL;
 						free(ant->next);
 						ant->next=NULL;
 						i--;
@@ -176,14 +178,14 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 		head=node;
 	}
   else{
-			if (((head->arr->eta + (float)(data.L) > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
 	  			node->next = head;
           head=node;
       }
       else {
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && ((head->arr->eta + (float)(data.L) <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
+          while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
               ant=tmp;
               tmp=tmp->next;
           }
@@ -233,10 +235,13 @@ int insert_slot(char* slots[16], char* inst){
 	}
 	return -1;
 }
+
 void* flight_selector(){
 	Dep_q* tempd;
 	Arr_q* tempa;
+	int value;
 	while (1){
+		sem_wait(semTSe);
 		sem_wait(semRuW);				//wait for runway to be clear
 		tempd = dep_q;
 		tempa = arr_q;
@@ -246,7 +251,11 @@ void* flight_selector(){
 				printf("dep_q null, run arriv\n" );
 				//ver se possivel juntar par
 				sem_wait(semArr);
-				sem_wait(semDep); sem_wait(semDep);
+				sem_getvalue(semDep, &value);
+				if (value==2){
+					sem_wait(semDep);
+					sem_wait(semDep);
+				}
 				sem_wait(semShM);
 				mem->slots[arr_q->slot]=DOURJOB;
 				sem_post(&mem->flights[arr_q->slot]);				//para thread ir ler shared memory
@@ -267,7 +276,11 @@ void* flight_selector(){
 					printf("arr_q and dep_q not null, run arriv\n" );
 					//ver se possivel juntar par
 					sem_wait(semArr);
-					sem_wait(semDep); sem_wait(semDep);
+					sem_getvalue(semDep, &value);
+					if (value==2){
+						sem_wait(semDep);
+						sem_wait(semDep);
+					}
 					sem_wait(semShM);
 					mem->slots[arr_q->slot]=DOURJOB;
 					sem_post(&mem->flights[arr_q->slot]);				//para thread ir ler shared memory
@@ -287,7 +300,11 @@ void* flight_selector(){
 				printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
 				//ver se possivel juntar par
 				sem_wait(semDep);
-				sem_wait(semArr); sem_wait(semArr);
+				sem_getvalue(semArr, &value);
+				if (value==2){
+					sem_wait(semArr);
+					sem_wait(semArr);
+				}
 				sem_wait(semShM);
 				mem->slots[dep_q->slot]=DOURJOB;
 				sem_post(&mem->flights[dep_q->slot]);				//para thread ir ler shared memory
@@ -310,7 +327,11 @@ void* flight_selector(){
 		else if ((dep_q!=NULL) && (dep_q->dep->takeoff <= mem->t)){
 			printf("arr_q null, run dep\n" );
 			sem_wait(semDep);
-			sem_wait(semArr); sem_wait(semArr);
+			sem_getvalue(semArr, &value);
+			if (value==2){
+				sem_wait(semArr);
+				sem_wait(semArr);
+			}
 			sem_wait(semShM);
 			mem->slots[dep_q->slot]=DOURJOB;
 			sem_post(&mem->flights[dep_q->slot]);				//para thread ir ler shared memory
@@ -329,7 +350,6 @@ void* flight_selector(){
 			sem_post(semRuW);
 			//printf("nothing\n" );
 		}
-		sleep (2);
 	}
 	pthread_exit(NULL);
 }

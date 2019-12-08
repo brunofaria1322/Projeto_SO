@@ -1,3 +1,6 @@
+//Bruno Ricardo Leitão Faria - 2018295474
+//Diogo Alves Almeida Flórido - 2018282583
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,14 +18,15 @@
 #include <pthread.h>
 #include <sys/msg.h>
 
-#define MAX 512
-#define DEBUG   //remove this line to remove debug messages
+#define MAX 256
+//#define DEBUG   //remove this line to remove debug messages
 #define SEMLOG "SemLog"
 #define SEMSHM "SemShM"
 #define SEMARR "SemArr"
 #define SEMDEP "SemDep"
 #define SEMRUW "SemRuW"     //if runway is clear for or not
 #define SEMTIM "SemTim"
+#define SEMTSE "SemTSe"
 #define PIPE_NAME   "input_pipe"
 #define NO_INST "no_inst"
 #define BYEBYE "redirected"
@@ -147,10 +151,12 @@ int queue_size;       //number of active threads
 int semid;            //id of semaphore
 int shmid;            //id of shared memory
 SharedMemory *mem;    //pointer to the shared memory
+
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t log_mutex;  //mutex for access to shared memoru
 //pthread_mutex_t shm_mutex;  //mutex for access to shared memoru
-sem_t *semLog, *semShM, *semArr, *semDep, *semTim, *semRuW;
+
+sem_t *semLog, *semShM, *semArr, *semDep, *semTim, *semRuW, *semTSe;
                     //, *semMQ,
 Dep_q* dep_q;
 Arr_q* arr_q;

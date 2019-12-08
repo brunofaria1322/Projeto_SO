@@ -59,7 +59,7 @@ int main(int argc, char *argv[]){
 	mem->flights_redirected = 0;
 	mem->flights_rejected = 0;
 
-	commands * head; //=(commands *) malloc(sizeof(commands));
+	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
 
 	//mem->flights=(sem_t *) malloc(sizeof(sem_t)*(data.A+data.D+1));
@@ -75,6 +75,7 @@ int main(int argc, char *argv[]){
   sem_unlink(SEMARR);
   sem_unlink(SEMDEP);
 	sem_unlink(SEMTIM);
+	sem_unlink(SEMTSE);
 	sem_unlink(SEMRUW);
 
   semLog = sem_open(SEMLOG, O_CREAT|O_EXCL, 0600, 1);
@@ -82,6 +83,7 @@ int main(int argc, char *argv[]){
 	semArr = sem_open(SEMARR, O_CREAT|O_EXCL, 0600, 2);
 	semDep = sem_open(SEMDEP, O_CREAT|O_EXCL, 0600, 2);
 	semTim = sem_open(SEMTIM, O_CREAT|O_EXCL, 0600, 1);
+	semTSe = sem_open(SEMTSE, O_CREAT|O_EXCL, 0600, 1);
 	semRuW = sem_open(SEMRUW, O_CREAT|O_EXCL, 0600, 1);
 
 	// // Create an array of 2 semaphores
@@ -135,24 +137,22 @@ int main(int argc, char *argv[]){
 		perror("the creation of a child process was unsuccessful.");
 		exit(0);
 	}
-	//int total,n;
+	int total,n;
 	char * com, *token;
 	while (1){
 
-		if ((fd = open(PIPE_NAME,  O_RDONLY)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
+		if ((fd = open(PIPE_NAME,  O_RDWR)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
 
 			//ler do pipe
 
-			read(fd, (char*)buff,sizeof(buff));
-
-			// n=total=0;
-			// while (total < MAX) {
-			// 	n =  read(fd, (char*)buff + total,sizeof(buff)-total);
-			// 	total+= n;
-			// }
+			n=total=0;
+			while (total < MAX) {
+				n =  read(fd, (char*)buff + total,sizeof(buff)-total);
+				total+= n;
+			}
+			printf("%s\n", buff);
 
 			close(fd);
-			printf("%s\n", buff);
 
 			char* aux_com;
 			com=strtok_r(buff,"\n",&aux_com);
@@ -173,9 +173,8 @@ int main(int argc, char *argv[]){
 						printf ("Arg[%d] - %s\n",i,args[i]);
 					}
 				#endif
-				printf("Verify\n" );
+
 				inf->head=verify(num, args, inf->head);
-				printf("terminou verify\n" );
 				#ifdef DEBUG
 					if (inf->head) printf ("head->init: %d\ni",inf->head->init);
 				#endif
@@ -204,13 +203,15 @@ void sigint (int signum){
 		sem_close(semShM);								//closes SharedMemory semaphore
 		sem_close(semArr);								//closes Arrival semaphore
 		sem_close(semDep);								//closes Departure semaphore
-		sem_close(semTim);								//closes Time changed semaphore
+		sem_close(semTSe);								//closes Time changed for select semaphore
+		sem_close(semTim);								//closes Time changed for twtimer semaphore
 		sem_close(semRuW);								//closes Runway (clear?) semaphore
 		sem_unlink(SEMLOG);								//unlink Log semaphore
 		sem_unlink(SEMSHM);								//unlink SharedMemory semaphore
 	  sem_unlink(SEMARR);								//unlink Arrival semaphore
 	  sem_unlink(SEMDEP);								//unlink Departure semaphore
-		sem_unlink(SEMTIM);								//unlink Time change semaphore
+		sem_unlink(SEMTSE);								//unlink Time change for select semaphore
+		sem_unlink(SEMTIM);								//unlink Time change for twtimer semaphore
 		sem_unlink(SEMRUW);								//unlink Runway (clear?) semaphore
 
 		sem_t *flights=mem->flights;
@@ -253,7 +254,8 @@ void ftimer(info * inf){
 		printf("UT %d\n",inf->ut);
 	#endif
 
-	int t=0; int ti=1000*inf->ut;
+	int t=0, sem_v;
+	int ti=1000*inf->ut;
 	while (1){
 		if(t%30==0){
 			printf("Time: %d\n",t);
@@ -295,6 +297,10 @@ void ftimer(info * inf){
 		mem->t=t;
 		sem_post(semShM);
 		sem_post(semTim);
+
+		sem_getvalue(semTSe,&sem_v);
+		if (sem_v==0)
+			sem_post(semTSe);
 	}
 }
 
@@ -431,16 +437,22 @@ void *fArrival(Arrival * arrival){
 		printf("Thread na Arrival\n");
 	#endif
 	char buf[MAX];
-	sprintf(buf,"New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
-	writeLog(f,buf);
 	Msg_deparr msgd;
 	Msg_slot msgs;
 	msgd.mtype = 2;
 	msgd.arr=*(arrival);
-	if (msgd.arr.fuel<msgd.arr.eta+(float)(data.L+4)){
+	if (msgd.arr.fuel<msgd.arr.eta+data.L+4){
 		msgd.arr.emer = 1;
+		sprintf(buf,"[EMERGENCY] New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
+		writeLog(f,buf);
+
 	}
-	else{msgd.arr.emer = 0;}
+	else{
+		msgd.arr.emer = 0;
+		sprintf(buf,"New Arrival %s on Thread %d",arrival->code,(int ) pthread_self());
+		writeLog(f,buf);
+	}
+
 	msgsnd(mqid, &msgd , sizeof(msgd), 0);
 	//continue
 	#ifdef DEBUG
@@ -512,14 +524,13 @@ void *fArrival(Arrival * arrival){
 }
 
 char* command(int argc, char argv[][MAX]){
-	int i,size = 0;
+	int i, size = 0;
 	for(i=0;i<argc;i++){
 		size = size + strlen(argv[i]);
 	}
-	printf("Alocar no comand\n");
 	char * com = (char*)malloc(size*sizeof(char)+1 + argc);
-	printf("Aloquei no comand\n");
-	for(i=0; i<argc;i++){
+	strcpy(com,argv[1]); strcat(com," ");
+	for(i=2; i<argc;i++){
 		strcat(com,argv[i]); strcat(com," ");
 	}
 	return com;
@@ -530,7 +541,6 @@ char * setHolding(int delay){
 	strcpy(mt,MAKETIME);
 	sprintf(delays, "%d",delay);
 	strcat(mt,delays);
-	free(delays);
 return mt;
 }
 int getHolding(char* holding){
