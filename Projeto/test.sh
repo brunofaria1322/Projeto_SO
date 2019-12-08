@@ -6,3 +6,6 @@ sleep 1
 ./client ARRIVAL TP80 init: 40 eta: 50 fuel: 50
 ./client ARRIVAL TP81 init: 50 eta: 60 fuel: 30
 ./client ARRIVAL TP82 init: 60 eta: 70 fuel: 20
+
+
+#./client ARRIVAL TP82 init: 10 eta: 20 fuel: 20

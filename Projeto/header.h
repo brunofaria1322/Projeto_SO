@@ -96,7 +96,7 @@ typedef struct{
   int flights_redirected;   //Number of flights redirected to another airport
   int flights_rejected;     //Flights rejected by the Control Tower
   char* slots[16];	        //Instructions for each flight
-  sem_t **flights;          //unnamed semaphores for thread dep or arrival know when to acess shared memory
+  sem_t flights[];          //unnamed semaphores for thread dep or arrival know when to acess shared memory
 }SharedMemory;
 
 typedef struct{

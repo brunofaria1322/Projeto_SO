@@ -58,7 +58,7 @@ void tower(){
 				msgs.slot = insert_slot(mem->slots,NO_INST);
 				sem_post(semShM);
 				msgs.mtype = 3;
-				printf("Torre: slot = %d\n",msgs.slot);
+				//printf("Torre: slot = %d\n",msgs.slot);
 				msgsnd(mqid, &msgs, sizeof(msgs), 0);
 				Arr_q* arr = (Arr_q*)malloc(sizeof(Arr_q));
 				arr->arr = (Arrival*)malloc(sizeof(Arrival));
@@ -85,16 +85,13 @@ void tower(){
 
 void * twtimer(){
 	Arr_q * aux, *tmp, *ant;
-	char ** memslots;
 	while(1){
 		sem_wait(semTim); 		//espera por alteração no tempo
 		ant=NULL;
 		aux=arr_q;
 		while(aux){						//enquanto existir elementos na queue dos arrivals
-			sem_wait(semShM);		///removable
-			memslots=mem->slots;
-			sem_post(semShM);			//removable
-			if(aux->arr->fuel<=0 || strcmp(memslots[aux->slot],BYEBYE)==0){		//se for para remover
+
+			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
 				printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
@@ -102,11 +99,12 @@ void * twtimer(){
 				if(aux->arr->fuel<=0){
 					mem->flights_redirected++;
 				}
+
+				sem_post(&mem->flights[aux->slot]);				//para thread ir ler shared memory
+				printf("POSTEI %d\n",aux->slot);
+
 				sem_post(semShM);			//removable
 
-				printf("vou dar post em %s\n",aux->arr->code);
-				sem_post(mem->flights[aux->slot]);				//para thread ir ler shared memory
-				printf("dei post em %s\n",aux->arr->code);
 				if (!ant){
 					if(aux->next!=NULL){				//Im the first
 						arr_q=tmp->next;
@@ -131,7 +129,7 @@ void * twtimer(){
 						ant->next=NULL;
 					}
 				}
-				//printarr(arr_q);
+				printarr(arr_q);
 			}
 			else{
 				aux->arr->fuel--;
@@ -152,13 +150,13 @@ void printarr(Arr_q* copy){
 Arr_q* addArrival(Arr_q * node, Arr_q * head){
 	Arr_q *tmp, *ant;
   if (head==NULL){
-		printf("1\n");
+		//printf("1\n");
 		head=node;
 	}
   else{
 			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
 			//if ((head->arr->fuel - head->arr->eta +head->arr->init > node->arr->fuel - node->arr->eta+node->arr->init)||(node->arr->emer == 1 && head->arr->emer == 0)) {
-					printf("2\n");
+					//printf("2\n");
 	  			node->next = head;
           head=node;
       }
@@ -173,7 +171,7 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 			// 	ant->next=node;
 			// }
       else {
-					printf("3\n");
+					//printf("3\n");
           ant=head;
           tmp=head->next;
           while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {

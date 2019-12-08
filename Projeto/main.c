@@ -62,6 +62,8 @@ int main(int argc, char *argv[]){
 	commands * head=(commands *) malloc(sizeof(commands));
 	head=NULL;
 
+	//mem->flights=(sem_t *) malloc(sizeof(sem_t)*(data.A+data.D+1));
+
 	info * inf;
 	inf = (info *)malloc(sizeof(info));
 	inf->ut=data.ut;
@@ -192,13 +194,16 @@ void sigint (int signum){
 	  sem_unlink(SEMARR);								//unlink Arrival semaphore
 	  sem_unlink(SEMDEP);								//unlink Departure semaphore
 		sem_unlink(SEMTIM);								//unlink Time change semaphor
-		sem_t **flights=mem->flights;
-		while(*flights){									//closes flights semaphores
-			sem_destroy(*flights);
-			free(*flights);
-			(*flights)++;
-		}
-		free (mem->flights);
+// 		sem_t *flights=mem->flights;
+//
+// 		sem_t *ant=mem->flights;
+// //bai dar errp
+// 		while(*flights){									//closes flights semaphores
+// 			sem_destroy(*flights);
+// 			free(*flights);
+// 			(*flights)++;
+// 		}
+// 		free (mem->flights);
 		//semctl(semid, 0, IPC_RMID);			//releases semaphore
 		shmctl(shmid, IPC_RMID, NULL);		//releases shared memory
 		msgctl(mqid, IPC_RMID, NULL);			//releases message queue
@@ -348,14 +353,12 @@ void *fDepart(Departure * departure){
 	#ifdef DEBUG
 		printf("saida da Thread na Departur\n");
 	#endif
+
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
 	printf("slot = %d\n", msgs.slot);
 
-	mem->flights=(sem_t **)realloc(mem->flights,sizeof(sem_t*)*(msgs.slot+1));
-	mem->flights[msgs.slot]=(sem_t *)malloc(sizeof(sem_t));
-
-	sem_init(mem->flights[msgs.slot],1,0);
-	sem_t *flight=mem->flights[msgs.slot];
+	sem_init(&mem->flights[msgs.slot],1,0);
+	printf("slot = %d\n", msgs.slot);
 	// queue_size--;
 
 	// pthread_exit(NULL);
@@ -363,25 +366,24 @@ void *fDepart(Departure * departure){
 
 	while(1){
 		//será alterado
-		sem_wait(flight);									//espera pelo sinal da tower
+		sem_wait(&mem->flights[msgs.slot]);									//espera pelo sinal da tower
 		//TODO:Usar condition variables
-		sem_wait(semShM);			//será removido
+					//será removido
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			pthread_exit(NULL);
-			return NULL;
 		}
 		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
+			sem_wait(semShM);
 			mem->flights_takingoff++;
+			sem_post(semShM);
 			char buf[MAX];
 			sprintf(buf,"Flight %s had just took off. Bon Voyage!",departure->code);
 			writeLog(f,buf);
 			usleep(data.dt*1000);
-			sem_post(semDep);
+			sem_post(semDep);						//liberta pista
 			pthread_exit(NULL);
-			return NULL;
 		}
-		sem_post(semShM);
 	}
 }
 
@@ -410,43 +412,36 @@ void *fArrival(Arrival * arrival){
 	msgrcv(mqid, &msgs, sizeof(msgs), 3, 0);
 	printf("slot = %d\n",msgs.slot);
 
-	mem->flights=(sem_t **)realloc(mem->flights,sizeof(sem_t*)*(msgs.slot+1));
-	mem->flights[msgs.slot]=(sem_t *)malloc(sizeof(sem_t));
 
+	sem_wait(semShM);
+	sem_init(&mem->flights[msgs.slot],1,0);
+	sem_post(semShM);
 
-	sem_init(mem->flights[msgs.slot],1,0);
-	sem_t *flight=mem->flights[msgs.slot];
-
-	// queue_size--;
-	// pthread_exit(NULL);
-	// return NULL;
+	printf("slot = %d\n",msgs.slot);
 
 	while(1){
-		sem_wait(flight);
-		printf("recebi post em %s\n",arrival->code);
-		//mesmo que na thread depart
-		sem_wait(semShM);
+
+		sem_wait(&mem->flights[msgs.slot]);
+		printf("saiu de espera em %s : slot %d\n",arrival->code,msgs.slot);
+
 		if(strcmp(mem->slots[msgs.slot],BYEBYE)==0){
 			queue_size--;
 			printf("%s: %s\n",arrival->code,BYEBYE);
 			pthread_exit(NULL);
-			return NULL;
 		}
-		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){
+		else if(strcmp(mem->slots[msgs.slot],DOURJOB)==0){				//voar
+			sem_wait(semShM);
 			mem->flights_takingoff++;
+			sem_post(semShM);
+
 			char buf[MAX];
 			sprintf(buf,"Flight %s had just arrived.",arrival->code);
 			writeLog(f,buf);
 			usleep(data.dl*1000);
-			sem_post(semArr);
+			sem_post(semArr);				//libertar pista
 			pthread_exit(NULL);
-			return NULL;
 		}
-		sem_post(semShM);
 	}
-	queue_size--;
-	pthread_exit(NULL);
-	return NULL;
 }
 
 char* command(int argc, char argv[][MAX]){
