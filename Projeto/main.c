@@ -135,20 +135,21 @@ int main(int argc, char *argv[]){
 		perror("the creation of a child process was unsuccessful.");
 		exit(0);
 	}
-	int total,n;
+	//int total,n;
 	char * com, *token;
 	while (1){
 
-		if ((fd = open(PIPE_NAME,  O_RDWR)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
+		if ((fd = open(PIPE_NAME,  O_RDONLY)) >= 0) { // O_RDONLY  só para leitura, O_WRONLY só para escrita, O_RDWR para escrita e leitura
 
 			//ler do pipe
 
-			n=total=0;
-			while (total < MAX) {
-				n =  read(fd, (char*)buff + total,sizeof(buff)-total);
-				total+= n;
-			}
-			printf("%s\n", buff);
+			read(fd, (char*)buff,sizeof(buff));
+
+			// n=total=0;
+			// while (total < MAX) {
+			// 	n =  read(fd, (char*)buff + total,sizeof(buff)-total);
+			// 	total+= n;
+			// }
 
 			close(fd);
 
@@ -515,8 +516,7 @@ char* command(int argc, char argv[][MAX]){
 		size = size + strlen(argv[i]);
 	}
 	char * com = (char*)malloc(size*sizeof(char)+1 + argc);
-	strcpy(com,argv[1]); strcat(com," ");
-	for(int i=2; i<argc;i++){
+	for(int i=0; i<argc;i++){
 		strcat(com,argv[i]); strcat(com," ");
 	}
 	return com;

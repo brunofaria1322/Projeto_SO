@@ -10,7 +10,7 @@
 
 
 #define PIPE_NAME   "input_pipe"
-#define DEBUG
+//#define DEBUG
 #define MAX 256
 
 int main(int argc, char *argv[]) {

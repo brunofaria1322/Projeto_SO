@@ -108,7 +108,7 @@ void * twtimer(){
 					mem->slots[aux->slot]=BYEBYE;
 			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
-				//printf("Fuel tá a zero em %s\n",aux->arr->code);
+				printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
 				mem->slots[aux->slot]=BYEBYE;
 
