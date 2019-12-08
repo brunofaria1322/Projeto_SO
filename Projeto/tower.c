@@ -89,8 +89,19 @@ void * twtimer(){
 		sem_wait(semTim); 		//espera por alteração no tempo
 		ant=NULL;
 		aux=arr_q;
+		int i = 0;
 		while(aux){						//enquanto existir elementos na queue dos arrivals
+			i++;
+			time = time + aux->arr->eta;
 
+			if(aux->arr->eta<=0 && i >5){
+				if(aux->arr->fuel > time){
+					aux->arr->eta = (int)((i-1)/2)*data.L;
+					sem_wait(semShM);
+					mem->slots[aux->slot]=setHolding(time);
+					sem_post(semShM);
+				}
+			}
 			if(aux->arr->fuel<=0 || strcmp(mem->slots[aux->slot],BYEBYE)==0){		//se for para remover
 				//printf("Fuel tá a zero em %s\n",aux->arr->code);
 				sem_wait(semShM);		///removable
@@ -215,8 +226,12 @@ void* flight_selector(){
 	Arr_q* tempa = arr_q;
 	if ((arr_q->arr->eta <= dep_q->dep->takeoff - t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - t + data.T)){
 		sem_wait(semArr);
-		sem_getvalue(semDep,0);
+		sem_wait(semDep); sem_wait(semDep);
+		sem_wait(semShM);
 		mem->slots[arr_q->slot]=DOURJOB;
+		mem->flights_landed++;
+		mem->time2land = (mem->time2land + abs(arr_q->arr->eta))/mem->flights_landed;
+		sem_post(semShM);
 		if (tempa->next!=NULL){
 			arr_q = tempa->next;
 			free(tempa);
@@ -227,8 +242,12 @@ void* flight_selector(){
 	}
 	else{
 		sem_wait(semDep);
-		sem_getvalue(semArr,0);
+		sem_wait(semArr); sem_wait(semArr);
+		sem_wait(semShM);
 		mem->slots[dep_q->slot]=DOURJOB;
+		mem->flights_takingoff++;
+		mem->time2takeoff = (mem->time2takeoff + (int)(t-dep_q->dep->takeoff))/mem->flights_takingoff;
+		sem_post(semShM);
 		if (tempd->next!=NULL){
 			dep_q = tempd->next;
 			free(tempd);
