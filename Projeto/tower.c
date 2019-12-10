@@ -178,14 +178,14 @@ Arr_q* addArrival(Arr_q * node, Arr_q * head){
 		head=node;
 	}
   else{
-			if (((head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)) || (node->arr->emer == 1 && head->arr->emer == 0) ) {
+			if (((head->arr->eta  > node->arr->eta + data.L) || ((head->arr->eta < node->arr->eta) &&(head->arr->eta + data.L > node->arr->eta) && (head->arr->fuel - head->arr->eta > node->arr->fuel - node->arr->eta)))) {
 	  			node->next = head;
           head=node;
       }
       else {
           ant=head;
           tmp=head->next;
-          while ((tmp!=NULL) && ((head->arr->eta + data.L <= node->arr->eta) || (head->arr->fuel - head->arr->eta <= node->arr->fuel - node->arr->eta)) && (node->arr->emer == 0 || head->arr->emer == 1)) {
+          while ((tmp!=NULL) && ((tmp->arr->eta  + data.L < node->arr->eta) || ((tmp->arr->eta  + data.L > node->arr->eta) && (tmp->arr->eta < node->arr->eta) &&  (tmp->arr->fuel - tmp->arr->eta < tmp->arr->fuel - tmp->arr->eta)))) {
               ant=tmp;
               tmp=tmp->next;
           }
@@ -246,9 +246,13 @@ void* flight_selector(){
 		tempd = dep_q;
 		tempa = arr_q;
 		if (arr_q!=NULL){
-			printf("arr_q not null\n" );
+			#ifdef DEBUG
+				printf("arr_q not null\n" );
+			#endif
 			if ((dep_q==NULL) && arr_q->arr->eta <=0){
-				printf("dep_q null, run arriv\n" );
+				#ifdef DEBUG
+					printf("dep_q null, run arriv\n" );
+				#endif
 				//ver se possivel juntar par
 				sem_wait(semArr);
 				sem_getvalue(semDep, &value);
@@ -273,7 +277,9 @@ void* flight_selector(){
 			else if ((dep_q!=NULL) && ((arr_q->arr->eta <= dep_q->dep->takeoff - mem->t && arr_q->arr->emer == 0) || (arr_q->arr->emer == 1 && arr_q->arr->eta <= dep_q->dep->takeoff - mem->t + data.T))){
 				//printf("arr_q and dep_q not null\n" );
 				if ( arr_q->arr->eta <=0){
-					printf("arr_q and dep_q not null, run arriv\n" );
+					#ifdef DEBUG
+						printf("arr_q and dep_q not null, run arriv\n" );
+					#endif
 					//ver se possivel juntar par
 					sem_wait(semArr);
 					sem_getvalue(semDep, &value);
@@ -297,7 +303,9 @@ void* flight_selector(){
 				}
 			}
 			else if ((dep_q!=NULL) && dep_q->dep->takeoff <= mem->t){
-				printf("arr_q and dep_q not null, run dep\n" );				//funfa bem
+				#ifdef DEBUG
+					printf("arr_q and dep_q not null, run dep\n" );
+				#endif
 				//ver se possivel juntar par
 				sem_wait(semDep);
 				sem_getvalue(semArr, &value);
@@ -325,7 +333,10 @@ void* flight_selector(){
 			}
 		}
 		else if ((dep_q!=NULL) && (dep_q->dep->takeoff <= mem->t)){
-			printf("arr_q null, run dep\n" );
+			#ifdef DEBUG
+				printf("arr_q null, run dep\n" );
+			#endif
+
 			sem_wait(semDep);
 			sem_getvalue(semArr, &value);
 			if (value==2){

@@ -137,7 +137,7 @@ int main(int argc, char *argv[]){
 		perror("the creation of a child process was unsuccessful.");
 		exit(0);
 	}
-	int total,n;
+	//int total,n;
 	char * com, *token;
 	while (1){
 
@@ -145,11 +145,13 @@ int main(int argc, char *argv[]){
 
 			//ler do pipe
 
-			n=total=0;
-			while (total < MAX) {
-				n =  read(fd, (char*)buff + total,sizeof(buff)-total);
-				total+= n;
-			}
+			// n=total=0;
+			// while (total < MAX) {
+			// 	n =  read(fd, (char*)buff + total,sizeof(buff)-total);
+			// 	total+= n;
+			// }
+
+			read(fd, (char*)buff,sizeof(buff));
 			printf("%s\n", buff);
 
 			close(fd);
@@ -194,6 +196,17 @@ int main(int argc, char *argv[]){
 //Exit signal
 void sigint (int signum){
 	//Terminating ad Closing everything
+	// int i;
+	// while(1){
+	// 	for(i=0;data.D + data.A;i++){
+	// 		if(mem->slots[i]!=NULL){
+	// 			break;
+	// 		}
+	// 	}
+	// 	if(i==data.D + data.A-1){
+	// 		break;
+	// 	}
+	// }
 	if(pid!=0){
 		wait(NULL);												//wait for child to terminate
 		writeLog(f,"Program finished running.");
